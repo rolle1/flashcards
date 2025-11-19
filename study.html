@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Study – Integros Flashcards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="brand-header small">
+      <div class="brand-logo-wrap">
+        <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
+      </div>
+      <div class="brand-text">
+        <h1>Study</h1>
+        <p>Tap, flip, repeat. Integros mode.</p>
+      </div>
+      <nav class="brand-nav">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+      </nav>
+    </header>
+
+    <main class="study-main">
+      <section class="study-top-bar">
+        <div class="select-group">
+          <label for="deckSelect">Deck</label>
+          <select id="deckSelect"></select>
+        </div>
+        <div class="select-group">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect">
+            <option value="normal">Normal</option>
+            <option value="mc">Multiple choice</option>
+            <option value="type">Type answer</option>
+            <option value="spaced">Spaced (smart order)</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="card-shell">
+        <div class="card-header-row">
+          <span>Card <strong id="cardIndex">1</strong> of <strong id="cardTotal">1</strong></span>
+          <span id="cardDeckName" class="card-deck-name"></span>
+        </div>
+
+        <div class="card-label" id="cardLabel">Question</div>
+
+        <div class="card" id="card">
+          <div class="card-face">
+            <p id="cardText">Loading...</p>
+          </div>
+        </div>
+
+        <div class="controls-main">
+          <div class="row">
+            <button id="prevBtn" class="btn-pill">Prev</button>
+            <button id="flipBtn" class="btn-pill btn-primary">Flip</button>
+            <button id="nextBtn" class="btn-pill">Next</button>
+          </div>
+
+          <div class="row">
+            <button id="wrongBtn" class="btn-pill btn-bad">Wrong</button>
+            <button id="rightBtn" class="btn-pill btn-good">Right</button>
+          </div>
+
+          <div class="row mode-row mc-row" id="mcRow">
+            <button class="btn-pill mc-option" data-index="0"></button>
+            <button class="btn-pill mc-option" data-index="1"></button>
+            <button class="btn-pill mc-option" data-index="2"></button>
+            <button class="btn-pill mc-option" data-index="3"></button>
+          </div>
+
+          <div class="row mode-row type-row" id="typeRow">
+            <input id="typeInput" class="type-input" placeholder="Type your answer">
+            <button id="typeCheckBtn" class="btn-pill btn-primary">Check</button>
+          </div>
+        </div>
+
+        <div class="footer-row">
+          <div>
+            Score:
+            <span class="score" id="scoreText">0 right / 0 total</span>
+          </div>
+          <div class="hint">
+            Click card or press Space to flip
+          </div>
+        </div>
+      </section>
+
+      <section class="study-bottom">
+        <div class="json-note">
+          Decks are managed in Explore. Study uses whatever decks are loaded there.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/study.js"></script>
+</body>
+</html>
