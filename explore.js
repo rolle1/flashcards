@@ -51,12 +51,29 @@
       studyLink.className = "btn-pill";
       studyLink.textContent = "Study";
 
+      const renameBtn = document.createElement("button");
+      renameBtn.type = "button";
+      renameBtn.className = "btn-pill";
+      renameBtn.textContent = "Rename";
+      renameBtn.addEventListener("click", function () {
+        const newName = prompt("New name for deck '" + name + "':", name);
+        if (!newName) return;
+        const result = Integros.renameDeck(name, newName);
+        if (!result.ok) {
+          setStatus(result.reason || "Could not rename deck.", false);
+          return;
+        }
+        setStatus("Renamed deck to " + newName + ".", true);
+        renderDecks();
+      });
+
       actions.appendChild(studyLink);
+      actions.appendChild(renameBtn);
       item.appendChild(meta);
       item.appendChild(actions);
       deckListEl.appendChild(item);
     });
-  }
+
 
   importBtn.addEventListener("click", function () {
     clearStatus();
