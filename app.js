@@ -139,6 +139,37 @@
     const st = getDeckStats(deckName, deckLength);
     return { correct: st.correct, total: st.total };
   }
+    function renameDeck(oldName, newName) {
+    const s = loadState();
+    const trimmed = (newName || "").trim();
+
+    if (!s.decks[oldName]) {
+      return { ok: false, reason: "Deck not found." };
+    }
+    if (!trimmed) {
+      return { ok: false, reason: "Name cannot be empty." };
+    }
+    if (trimmed === oldName) {
+      return { ok: true };
+    }
+    if (s.decks[trimmed]) {
+      return { ok: false, reason: "A deck with that name already exists." };
+    }
+
+    // move deck
+    s.decks[trimmed] = s.decks[oldName];
+    delete s.decks[oldName];
+
+    // move stats if present
+    if (s.stats[oldName]) {
+      s.stats[trimmed] = s.stats[oldName];
+      delete s.stats[oldName];
+    }
+
+    saveState();
+    return { ok: true };
+  }
+
 
   window.Integros = {
     getDecks: getDecks,
@@ -147,6 +178,7 @@
     getStatsSnapshot: getStatsSnapshot,
     recordAnswer: recordAnswer,
     getLastIndex: getLastIndex,
-    chooseSpacedIndex: chooseSpacedIndex
+    chooseSpacedIndex: chooseSpacedIndex,
+    renameDeck: renameDeck
   };
 })();
