@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Explore Decks – Integros Flashcards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="brand-header small">
+      <div class="brand-logo-wrap">
+        <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
+      </div>
+      <div class="brand-text">
+        <h1>Deck Explorer</h1>
+        <p>See what you are training, swap decks, import or export JSON.</p>
+      </div>
+      <nav class="brand-nav">
+        <a href="index.html">Home</a>
+        <a href="study.html">Study</a>
+      </nav>
+    </header>
+
+    <main class="explore-main">
+      <section class="explore-decks">
+        <h2>Current decks</h2>
+        <div id="deckList" class="deck-list"></div>
+      </section>
+
+      <section class="explore-json">
+        <h2>JSON decks (advanced)</h2>
+        <p class="explore-help">
+          Paste JSON shaped like: { "Deck name": [ { "front": "...", "back": "..." } ] }.
+        </p>
+        <textarea id="jsonArea" class="json-area" placeholder='{
+  "My Deck": [
+    { "front": "Question", "back": "Answer" }
+  ]
+}'></textarea>
+
+        <div class="explore-actions">
+          <button id="importBtn" class="btn btn-primary">Import JSON decks</button>
+          <button id="exportBtn" class="btn">Export current decks</button>
+          <span id="jsonStatus" class="json-status"></span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/explore.js"></script>
+</body>
+</html>
+
