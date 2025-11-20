@@ -1,3 +1,4 @@
+// Deck Explorer logic
 (function () {
   const deckListEl = document.getElementById("deckList");
   const jsonArea = document.getElementById("jsonArea");
@@ -24,22 +25,26 @@
       const div = document.createElement("div");
       div.className = "deck-item";
       div.textContent =
-        "No decks loaded. Import JSON below or go back to defaults by clearing local storage.";
+        "No decks loaded. Import JSON below or reset local storage.";
       deckListEl.appendChild(div);
       return;
     }
 
     names.forEach(function (name) {
       const cards = decks[name] || [];
+
       const item = document.createElement("div");
       item.className = "deck-item";
 
       const meta = document.createElement("div");
       meta.className = "deck-meta";
+
       const title = document.createElement("strong");
       title.textContent = name;
+
       const sub = document.createElement("span");
       sub.textContent = cards.length + " cards";
+
       meta.appendChild(title);
       meta.appendChild(sub);
 
@@ -69,11 +74,12 @@
 
       actions.appendChild(studyLink);
       actions.appendChild(renameBtn);
+
       item.appendChild(meta);
       item.appendChild(actions);
       deckListEl.appendChild(item);
     });
-
+  }
 
   importBtn.addEventListener("click", function () {
     clearStatus();
@@ -82,27 +88,40 @@
       setStatus("Paste JSON into the box first.", false);
       return;
     }
+
     try {
       const parsed = JSON.parse(text);
       if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-        setStatus("Root JSON must be an object: { \"Deck name\": [ ... ] }", false);
+        setStatus(
+          'Root JSON must be an object: { "Deck name": [ { "front": "...", "back": "..." } ] }',
+          false
+        );
         return;
       }
+
       Object.keys(parsed).forEach(function (deckName) {
         const arr = parsed[deckName];
         if (!Array.isArray(arr)) {
           throw new Error("Deck " + deckName + " is not an array.");
         }
         arr.forEach(function (card, idx) {
-          if (!card || typeof card.front !== "string" || typeof card.back !== "string") {
-            throw new Error("Deck " + deckName + " card " + idx + " missing front/back string.");
+          if (
+            !card ||
+            typeof card.front !== "string" ||
+            typeof card.back !== "string"
+          ) {
+            throw new Error(
+              "Deck " + deckName + " card " + idx + " missing front/back string."
+            );
           }
         });
       });
+
       Integros.replaceDecks(parsed);
       renderDecks();
       setStatus("Imported decks from JSON.", true);
     } catch (err) {
+      console.error(err);
       setStatus("Invalid JSON or structure. Check commas and fields.", false);
     }
   });
