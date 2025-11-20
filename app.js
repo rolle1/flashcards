@@ -2,6 +2,8 @@
 (function () {
   const STORAGE_KEY = "integros-flashcards-v1";
 
+  // Default decks. You can change names or cards here, these are only used
+  // when there is nothing in localStorage yet.
   const defaultDecks = {
     "Example Deck": [
       { front: "What is the capital of France?", back: "Paris" },
@@ -25,6 +27,7 @@
 
   function loadState() {
     if (stateCache) return stateCache;
+
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) {
@@ -32,6 +35,7 @@
         return stateCache;
       }
       const parsed = JSON.parse(raw);
+
       if (!parsed.decks || typeof parsed.decks !== "object") {
         stateCache = { decks: defaultDecks, stats: {} };
       } else {
@@ -51,7 +55,7 @@
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stateCache));
     } catch (e) {
-      // ignore
+      // ignore storage errors
     }
   }
 
@@ -97,6 +101,7 @@
       st.total += 1;
       if (correct) st.correct += 1;
       st.lastIndex = cardIndex;
+
       if (spacedMode) {
         const boxes = st.boxes;
         const current = boxes[cardIndex] || 1;
@@ -119,7 +124,8 @@
   function chooseSpacedIndex(deckName, deckLength) {
     const stats = getDeckStats(deckName, deckLength);
     const boxes = stats.boxes;
-    const weightsForBox = [0, 4, 2, 1, 1];
+    const weightsForBox = [0, 4, 2, 1, 1]; // box 1 is most likely
+
     const bag = [];
     for (let i = 0; i < deckLength; i += 1) {
       const box = boxes[i] || 1;
@@ -139,7 +145,9 @@
     const st = getDeckStats(deckName, deckLength);
     return { correct: st.correct, total: st.total };
   }
-    function renameDeck(oldName, newName) {
+
+  // Rename a deck and keep its stats
+  function renameDeck(oldName, newName) {
     const s = loadState();
     const trimmed = (newName || "").trim();
 
@@ -169,7 +177,6 @@
     saveState();
     return { ok: true };
   }
-
 
   window.Integros = {
     getDecks: getDecks,
