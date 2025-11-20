@@ -2,24 +2,43 @@
 (function () {
   const STORAGE_KEY = "integros-flashcards-v1";
 
-  // Default decks. You can change names or cards here, these are only used
-  // when there is nothing in localStorage yet.
+  // Default decks used when localStorage is empty.
   const defaultDecks = {
-    "Example Deck": [
-      { front: "What is the capital of France?", back: "Paris" },
-      { front: "2 + 2 = ?", back: "4" },
-      { front: "HTTP stands for?", back: "HyperText Transfer Protocol" }
-    ],
-    "AZ-900 Basics": [
+    "AZ-900 Fundamentals": [
       { front: "What is Azure?", back: "Microsoft's cloud platform." },
       { front: "What does IaaS stand for?", back: "Infrastructure as a Service." },
       { front: "What does PaaS stand for?", back: "Platform as a Service." },
       { front: "What does SaaS stand for?", back: "Software as a Service." }
     ],
-    "CHAMP Hardware": [
+    "Infra Core Concepts": [
+      {
+        front: "What are the three core building blocks of infrastructure?",
+        back: "Compute, storage, and networking."
+      },
+      {
+        front: "Why do we take backups?",
+        back: "To be able to restore data and systems after failure, corruption, or loss."
+      },
+      {
+        front: "What does 'on-premises' mean?",
+        back: "Infrastructure hosted in your own facilities instead of a public cloud."
+      }
+    ],
+    "ITAM & CMDB": [
       { front: "What does ITAM stand for?", back: "IT Asset Management." },
-      { front: "Main goal of hardware lifecycle?", back: "Control cost, risk, and value across the hardware life." },
-      { front: "Example of hardware asset", back: "Laptop, desktop, server, switch, mobile device." }
+      {
+        front: "Main goal of hardware lifecycle?",
+        back: "Control cost, risk, and value across the hardware life."
+      },
+      {
+        front: "Example of a hardware asset",
+        back: "Laptop, desktop, server, switch, mobile device."
+      }
+    ],
+    "Example Deck": [
+      { front: "What is the capital of France?", back: "Paris" },
+      { front: "2 + 2 = ?", back: "4" },
+      { front: "HTTP stands for?", back: "HyperText Transfer Protocol" }
     ]
   };
 
@@ -124,7 +143,7 @@
   function chooseSpacedIndex(deckName, deckLength) {
     const stats = getDeckStats(deckName, deckLength);
     const boxes = stats.boxes;
-    const weightsForBox = [0, 4, 2, 1, 1]; // box 1 is most likely
+    const weightsForBox = [0, 4, 2, 1, 1];
 
     const bag = [];
     for (let i = 0; i < deckLength; i += 1) {
@@ -146,6 +165,20 @@
     return { correct: st.correct, total: st.total };
   }
 
+  // Delete a deck and its stats from localStorage
+  function deleteDeck(deckName) {
+    const s = loadState();
+    if (!s.decks[deckName]) {
+      return { ok: false, reason: "Deck not found." };
+    }
+    delete s.decks[deckName];
+    if (s.stats[deckName]) {
+      delete s.stats[deckName];
+    }
+    saveState();
+    return { ok: true };
+  }
+
   // Rename a deck and keep its stats
   function renameDeck(oldName, newName) {
     const s = loadState();
@@ -164,11 +197,9 @@
       return { ok: false, reason: "A deck with that name already exists." };
     }
 
-    // move deck
     s.decks[trimmed] = s.decks[oldName];
     delete s.decks[oldName];
 
-    // move stats if present
     if (s.stats[oldName]) {
       s.stats[trimmed] = s.stats[oldName];
       delete s.stats[oldName];
@@ -186,6 +217,7 @@
     recordAnswer: recordAnswer,
     getLastIndex: getLastIndex,
     chooseSpacedIndex: chooseSpacedIndex,
+    deleteDeck: deleteDeck,
     renameDeck: renameDeck
   };
 })();

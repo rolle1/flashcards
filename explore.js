@@ -1,9 +1,10 @@
-// Deck Explorer logic + static Deck Library
+// Deck Explorer logic + static Deck Library and delete support
 (function () {
-  // Static deck registry for the Deck Library grid
+  // Curated decks for the top "Deck Library" cards.
+  // id must match the deck name used inside Integros.
   const STATIC_DECKS = [
     {
-      id: "az900-fundamentals",
+      id: "AZ-900 Fundamentals",
       title: "AZ-900 Fundamentals",
       level: "Beginner",
       description:
@@ -11,7 +12,7 @@
       tags: ["Azure", "Cloud", "Exam"]
     },
     {
-      id: "infra-core",
+      id: "Infra Core Concepts",
       title: "Infra Core Concepts",
       level: "Intermediate",
       description:
@@ -19,18 +20,16 @@
       tags: ["Infra", "Ops"]
     },
     {
-      id: "itam-cmdb",
+      id: "ITAM & CMDB",
       title: "ITAM & CMDB",
       level: "Intermediate",
       description:
         "Assets, lifecycle states, relationships, clean configuration data.",
       tags: ["ITAM", "CMDB"]
     }
-    // Add more curated decks here as you build them
   ];
 
   const deckGridEl = document.getElementById("deck-grid");
-
   const jsonArea = document.getElementById("jsonArea");
   const importBtn = document.getElementById("importBtn");
   const exportBtn = document.getElementById("exportBtn");
@@ -48,7 +47,7 @@
     statusEl.style.color = ok ? "#4ade80" : "#fca5a5";
   }
 
-  // Render the static Deck Library cards
+  // Render the top Deck Library cards (Study + Delete)
   function renderStaticDecks() {
     if (!deckGridEl) return;
 
@@ -92,10 +91,38 @@
 
       const studyLink = document.createElement("a");
       studyLink.href = "study.html?deck=" + encodeURIComponent(deck.id);
-      studyLink.className = "btn primary";
+      studyLink.className = "btn-pill";
       studyLink.textContent = "Study deck";
 
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "btn-pill btn-bad";
+      deleteBtn.textContent = "Delete";
+
+      deleteBtn.addEventListener("click", function () {
+        const confirmed = window.confirm(
+          "Delete deck '" + deck.id + "' from this browser?"
+        );
+        if (!confirmed) return;
+
+        if (!window.Integros || !Integros.deleteDeck) {
+          window.alert("Delete is not available. Engine not loaded.");
+          return;
+        }
+
+        const result = Integros.deleteDeck(deck.id);
+        if (!result.ok) {
+          window.alert(
+            "Could not delete deck: " + (result.reason || "Unknown error")
+          );
+          return;
+        }
+
+        setStatus("Deleted deck '" + deck.id + "'.", true);
+      });
+
       actions.appendChild(studyLink);
+      actions.appendChild(deleteBtn);
 
       card.appendChild(title);
       card.appendChild(meta);
@@ -107,7 +134,7 @@
     });
   }
 
-  // JSON import / export section
+  // JSON import / export (Advanced section)
   if (importBtn) {
     importBtn.addEventListener("click", function () {
       clearStatus();
@@ -158,7 +185,6 @@
           });
         });
 
-        // Replace decks in your Integros engine
         Integros.replaceDecks(parsed);
         setStatus("Imported decks from JSON.", true);
       } catch (err) {
