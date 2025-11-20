@@ -52,7 +52,7 @@ body {
   width: 52px;
   height: 52px;
   border-radius: 999px;
-  background: radial-gradient(circle at 30% 20%, var(--accent-soft), #020617);
+  background: radial-gradient(circle at 30 percent 20 percent, var(--accent-soft), #020617);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -415,7 +415,7 @@ body {
 }
 
 .json-area {
-  width: 100%;
+  width: 100 percent;
   min-height: 120px;
   max-height: 220px;
   resize: vertical;
@@ -444,6 +444,72 @@ body {
   font-size: 11px;
 }
 
+/* Deck Library Grid */
+
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.deck-card {
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at top left, var(--bg-card), #020012);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  box-shadow: var(--shadow-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.deck-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.95);
+  border-color: var(--accent-soft);
+}
+
+.deck-card h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-main);
+}
+
+.deck-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.deck-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.deck-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.deck-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: rgba(129, 140, 248, 0.15);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  color: var(--accent-soft);
+}
+
+.section-divider {
+  border: none;
+  height: 1px;
+  margin: 4px 0 4px 0;
+  background: rgba(129, 140, 248, 0.3);
+}
+
 /* About */
 
 .about-main {
@@ -452,7 +518,7 @@ body {
 }
 
 .about-card {
-  width: 100%;
+  width: 100 percent;
   max-width: 620px;
   background: radial-gradient(circle at top left, var(--bg-card), #020012);
   border-radius: var(--radius-lg);
@@ -490,3 +556,4 @@ body {
     flex-direction: column;
   }
 }
+

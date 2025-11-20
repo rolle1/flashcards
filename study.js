@@ -41,6 +41,7 @@
     const decks = Integros.getDecks();
     const keys = Object.keys(decks);
     deckSelect.innerHTML = "";
+
     keys.forEach(function (name) {
       const opt = document.createElement("option");
       opt.value = name;
@@ -54,6 +55,7 @@
     } else {
       deckName = keys[0] || "";
     }
+
     deckSelect.value = deckName;
     deck = decks[deckName] || [];
     const last = Integros.getLastIndex(deckName, deck.length);
@@ -71,12 +73,13 @@
     cardDeckNameEl.textContent = deckName;
     if (!deck.length) {
       cardText.textContent =
-        "No cards in this deck. Go to Deck Explorer and load some.";
+        "No cards in this deck. Go to Explore and load some.";
       cardLabel.textContent = "Empty";
       cardIndexEl.textContent = "0";
       cardTotalEl.textContent = "0";
       return;
     }
+
     const current = deck[index];
     cardText.textContent = showingBack ? current.back : current.front;
     cardLabel.textContent = showingBack ? "Answer" : "Question";
@@ -157,8 +160,7 @@
     used.add(correctCard.back);
 
     while (choices.length < 4 && choices.length < all.length) {
-      const candidate =
-        all[Math.floor(Math.random() * all.length)];
+      const candidate = all[Math.floor(Math.random() * all.length)];
       if (!used.has(candidate)) {
         used.add(candidate);
         choices.push(candidate);
@@ -186,6 +188,7 @@
   function handleMultipleChoiceClick(selectedIndex) {
     if (mcCorrectOptionIndex == null) return;
     const correct = selectedIndex === mcCorrectOptionIndex;
+
     mcButtons.forEach(function (btn, idx) {
       btn.classList.remove("btn-good", "btn-bad");
       if (idx === mcCorrectOptionIndex) {
@@ -194,13 +197,14 @@
         btn.classList.add("btn-bad");
       }
     });
+
     record(correct);
   }
 
   function normalize(str) {
     return String(str || "")
       .trim()
-      .toLowerCase()
+      .lowerCase()
       .replace(/\s+/g, " ");
   }
 

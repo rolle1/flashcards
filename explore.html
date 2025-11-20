@@ -5,34 +5,52 @@
   <title>Explore Decks – Integros Flashcards</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
 </head>
 <body>
   <div class="app-shell">
-    <header class="brand-header small">
+
+    <header class="brand-header">
       <div class="brand-logo-wrap">
         <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
       </div>
       <div class="brand-text">
-        <h1>Deck Explorer</h1>
-        <p>See what you are training, swap decks, import or export JSON.</p>
+        <h1>Integros Flashcards</h1>
+        <p>Train your knowledge, build your edge.</p>
       </div>
       <nav class="brand-nav">
         <a href="index.html">Home</a>
         <a href="study.html">Study</a>
+        <a href="explore.html" aria-current="page">Explore</a>
+        <a href="about.html">About</a>
       </nav>
     </header>
 
     <main class="explore-main">
+
+      <!-- New DECK LIBRARY BLOCK -->
       <section class="explore-decks">
-        <h2>Current decks</h2>
-        <div id="deckList" class="deck-list"></div>
+        <h2>Deck Library</h2>
+        <p class="explore-help">
+          Pick a deck to drill. Each deck loads into the Study Engine using URL parameters.
+        </p>
+
+        <div id="deck-grid" class="deck-grid">
+          <!-- Dynamic cards from explore.js -->
+        </div>
       </section>
 
+      <hr class="section-divider">
+
+      <!-- Your original JSON tools preserved -->
       <section class="explore-json">
-        <h2>JSON decks (advanced)</h2>
+        <h2>JSON Decks (Advanced)</h2>
         <p class="explore-help">
-          Paste JSON shaped like: { "Deck name": [ { "front": "...", "back": "..." } ] }.
+          Paste JSON shaped like:
+          <br>
+          { "Deck name": [ { "front": "...", "back": "..." } ] }.
         </p>
+
         <textarea id="jsonArea" class="json-area" placeholder='{
   "My Deck": [
     { "front": "Question", "back": "Answer" }
@@ -45,11 +63,12 @@
           <span id="jsonStatus" class="json-status"></span>
         </div>
       </section>
+
     </main>
+
   </div>
 
   <script src="app.js"></script>
   <script src="explore.js"></script>
 </body>
 </html>
-
