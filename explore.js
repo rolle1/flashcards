@@ -1,7 +1,8 @@
-// Deck Explorer logic + static Deck Library and delete support
+// File: explore.js
+// Deck Explorer logic + Deck Library, New deck, delete, and JSON tools
 (function () {
   // Curated decks for the top "Deck Library" cards.
-  // id must match the deck name used inside Integros.
+  // id must match the deck name used inside Integros localStorage.
   const STATIC_DECKS = [
     {
       id: "AZ-900 Fundamentals",
@@ -30,6 +31,7 @@
   ];
 
   const deckGridEl = document.getElementById("deck-grid");
+  const newDeckBtn = document.getElementById("newDeckBtn");
   const jsonArea = document.getElementById("jsonArea");
   const importBtn = document.getElementById("importBtn");
   const exportBtn = document.getElementById("exportBtn");
@@ -47,20 +49,29 @@
     statusEl.style.color = ok ? "#4ade80" : "#fca5a5";
   }
 
-  // Render the top Deck Library cards (Study + Delete)
+  // Ensure curated decks exist in storage so Delete works
+  function ensureStaticDecksExist() {
+    if (!window.Integros) return;
+
+    const existing = Integros.getDecks();
+    const payload = {};
+
+    STATIC_DECKS.forEach(d => {
+      if (!existing[d.id]) {
+        payload[d.id] = [];
+      }
+    });
+
+    if (Object.keys(payload).length > 0 && Integros.mergeDecks) {
+      Integros.mergeDecks(payload);
+    }
+  }
+
+  // Render curated decks
   function renderStaticDecks() {
     if (!deckGridEl) return;
 
     deckGridEl.innerHTML = "";
-
-    if (!STATIC_DECKS.length) {
-      const empty = document.createElement("p");
-      empty.className = "deck-empty";
-      empty.textContent =
-        "No curated decks yet. Add them in explore.js under STATIC_DECKS.";
-      deckGridEl.appendChild(empty);
-      return;
-    }
 
     STATIC_DECKS.forEach(function (deck) {
       const card = document.createElement("article");
@@ -105,12 +116,8 @@
         );
         if (!confirmed) return;
 
-        if (!window.Integros || !Integros.deleteDeck) {
-          window.alert("Delete is not available. Engine not loaded.");
-          return;
-        }
-
         const result = Integros.deleteDeck(deck.id);
+
         if (!result.ok) {
           window.alert(
             "Could not delete deck: " + (result.reason || "Unknown error")
@@ -134,36 +141,86 @@
     });
   }
 
-  // JSON import / export (Advanced section)
+  // New deck button
+  if (newDeckBtn) {
+    newDeckBtn.addEventListener("click", function () {
+      if (!window.Integros || !Integros.mergeDecks) {
+        window.alert("New deck is not available. Engine not loaded.");
+        return;
+      }
+
+      const name = window.prompt(
+        "Enter a deck name.\n\n" +
+        "This name **must** be used inside the JSON:\n" +
+        '{\n  "Your Deck Name": [ { "front": "...", "back": "..." } ]\n}'
+      );
+
+      if (!name) return;
+
+      const trimmed = name.trim();
+      if (!trimmed) return;
+
+      const allDecks = Integros.getDecks();
+      if (allDecks[trimmed]) {
+        const overwrite = window.confirm(
+          "A deck named '" +
+            trimmed +
+            "' already exists. Overwrite it with an empty deck?"
+        );
+        if (!overwrite) return;
+      }
+
+      const payload = {};
+      payload[trimmed] = [];
+
+      Integros.mergeDecks(payload);
+      setStatus("Created new empty deck '" + trimmed + "'.", true);
+    });
+  }
+
+  // JSON Import
   if (importBtn) {
     importBtn.addEventListener("click", function () {
       clearStatus();
       if (!jsonArea) {
-        setStatus("JSON editor not found on page.", false);
+        setStatus("JSON box not found.", false);
         return;
       }
 
       const text = jsonArea.value.trim();
       if (!text) {
-        setStatus("Paste JSON into the box first.", false);
+        setStatus("Paste JSON first.", false);
         return;
       }
 
       try {
         const parsed = JSON.parse(text);
+
         if (
           typeof parsed !== "object" ||
           parsed === null ||
           Array.isArray(parsed)
         ) {
           setStatus(
-            'Root JSON must be an object: { "Deck name": [ { "front": "...", "back": "..." } ] }',
+            "Wrong format. JSON must look like:\n" +
+              '{ "Deck Name": [ { "front": "...", "back": "..." } ] }',
             false
           );
           return;
         }
 
-        Object.keys(parsed).forEach(function (deckName) {
+        const deckNames = Object.keys(parsed);
+
+        if (!deckNames.length) {
+          setStatus(
+            "Your JSON is missing a deck name key.\nExample:\n" +
+              '{ "AZ-900 Fundamentals": [ { "front": "...", "back": "..." } ] }',
+            false
+          );
+          return;
+        }
+
+        deckNames.forEach(function (deckName) {
           const arr = parsed[deckName];
           if (!Array.isArray(arr)) {
             throw new Error("Deck " + deckName + " is not an array.");
@@ -185,28 +242,34 @@
           });
         });
 
-        Integros.replaceDecks(parsed);
-        setStatus("Imported decks from JSON.", true);
+        if (Integros.mergeDecks) {
+          Integros.mergeDecks(parsed);
+        } else {
+          Integros.replaceDecks(parsed);
+        }
+
+        setStatus("Imported JSON decks successfully.", true);
       } catch (err) {
         console.error(err);
-        setStatus("Invalid JSON or structure. Check commas and fields.", false);
+        setStatus("Invalid JSON. Fix formatting and try again.", false);
       }
     });
   }
 
+  // JSON Export
   if (exportBtn) {
     exportBtn.addEventListener("click", function () {
       clearStatus();
       if (!jsonArea) {
-        setStatus("JSON editor not found on page.", false);
+        setStatus("JSON area missing.", false);
         return;
       }
-      const decks = Integros.getDecks();
-      jsonArea.value = JSON.stringify(decks, null, 2);
-      setStatus("Exported current decks to JSON.", true);
+      jsonArea.value = JSON.stringify(Integros.getDecks(), null, 2);
+      setStatus("Exported current decks.", true);
     });
   }
 
-  // Kick things off
+  // Start
+  ensureStaticDecksExist();
   renderStaticDecks();
 })();
