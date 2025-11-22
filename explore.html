@@ -26,46 +26,71 @@
       </nav>
     </header>
 
-    <main class="explore-main">
+    <main class="page-main explore-main">
+      <!-- Deck library section -->
+      <section class="page-section">
+        <div class="section-header-row">
+          <div>
+            <h2>Deck Library</h2>
+            <p class="section-subtitle">
+              Curated decks plus any custom decks you create in this browser.
+            </p>
+          </div>
 
-      <!-- New DECK LIBRARY BLOCK -->
-      <section class="explore-decks">
-        <h2>Deck Library</h2>
-        <p class="explore-help">
-          Pick a deck to drill. Each deck loads into the Study Engine using URL parameters.
-        </p>
+          <!-- New: Add deck button -->
+          <div class="section-actions">
+            <button id="newDeckBtn" class="btn-pill">
+              + Add deck
+            </button>
+          </div>
+        </div>
 
         <div id="deck-grid" class="deck-grid">
-          <!-- Dynamic cards from explore.js -->
+          <!-- Deck cards rendered by explore.js -->
         </div>
       </section>
 
-      <hr class="section-divider">
-
-      <!-- Your original JSON tools preserved -->
-      <section class="explore-json">
-        <h2>JSON Decks (Advanced)</h2>
-        <p class="explore-help">
-          Paste JSON shaped like:
-          <br>
-          { "Deck name": [ { "front": "...", "back": "..." } ] }.
+      <!-- JSON tools section -->
+      <section class="page-section json-tools">
+        <h2>JSON tools</h2>
+        <p class="section-subtitle">
+          Import or export decks as JSON. Use this to back up, share, or bulk edit your decks.
         </p>
 
-        <textarea id="jsonArea" class="json-area" placeholder='{
-  "My Deck": [
-    { "front": "Question", "back": "Answer" }
+        <label for="jsonArea" class="field-label">
+          Deck JSON
+        </label>
+        <textarea
+          id="jsonArea"
+          class="json-textarea"
+          rows="14"
+          spellcheck="false"
+          placeholder='Example:
+{
+  "AZ-900 Fundamentals": [
+    { "front": "What is Azure?", "back": "Microsoft&#39;s cloud platform." }
   ]
-}'></textarea>
+}'
+        ></textarea>
 
-        <div class="explore-actions">
-          <button id="importBtn" class="btn btn-primary">Import JSON decks</button>
-          <button id="exportBtn" class="btn">Export current decks</button>
-          <span id="jsonStatus" class="json-status"></span>
+        <div class="json-actions">
+          <button id="importBtn" class="btn-pill">
+            Import JSON decks
+          </button>
+          <button id="exportBtn" class="btn-pill btn-secondary">
+            Export current decks
+          </button>
         </div>
-      </section>
 
+        <p id="jsonStatus" class="json-status">
+          <!-- Status messages set by explore.js -->
+        </p>
+      </section>
     </main>
 
+    <footer class="app-footer">
+      <p>Integros Flashcards · Train your knowledge. Master your craft.</p>
+    </footer>
   </div>
 
   <script src="app.js"></script>
