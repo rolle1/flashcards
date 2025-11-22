@@ -19,6 +19,7 @@
   const mcButtons = Array.prototype.slice.call(
     document.querySelectorAll(".mc-option")
   );
+
   const typeRow = document.getElementById("typeRow");
   const typeInput = document.getElementById("typeInput");
   const typeCheckBtn = document.getElementById("typeCheckBtn");
@@ -30,6 +31,58 @@
   let mode = "normal";
   let mcCorrectOptionIndex = null;
 
+  // Swipe tracking
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let touchStartY = 0;
+  let touchEndY = 0;
+
+  function handleGesture() {
+    const dx = touchEndX - touchStartX;
+    const dy = Math.abs(touchEndY - touchStartY);
+
+    // Ignore vertical scroll gestures
+    if (dy > 60) return;
+
+    // Swipe right: previous
+    if (dx > 60) {
+      if (mode === "spaced") {
+        moveSpaced();
+      } else {
+        move(-1);
+      }
+      return;
+    }
+
+    // Swipe left: next
+    if (dx < -60) {
+      if (mode === "spaced") {
+        moveSpaced();
+      } else {
+        move(1);
+      }
+      return;
+    }
+
+    // Tap: flip
+    if (Math.abs(dx) < 10 && dy < 10) {
+      flipCard();
+    }
+  }
+
+  cardEl.addEventListener("touchstart", function (e) {
+    const t = e.changedTouches[0];
+    touchStartX = t.screenX;
+    touchStartY = t.screenY;
+  });
+
+  cardEl.addEventListener("touchend", function (e) {
+    const t = e.changedTouches[0];
+    touchEndX = t.screenX;
+    touchEndY = t.screenY;
+    handleGesture();
+  });
+
   function loadFromUrlParam() {
     const params = new URLSearchParams(window.location.search);
     const d = params.get("deck");
@@ -40,8 +93,8 @@
   function initDeckSelect() {
     const decks = Integros.getDecks();
     const keys = Object.keys(decks);
-    deckSelect.innerHTML = "";
 
+    deckSelect.innerHTML = "";
     keys.forEach(function (name) {
       const opt = document.createElement("option");
       opt.value = name;
@@ -58,6 +111,7 @@
 
     deckSelect.value = deckName;
     deck = decks[deckName] || [];
+
     const last = Integros.getLastIndex(deckName, deck.length);
     index = last;
     updateScoreDisplay();
@@ -65,15 +119,14 @@
 
   function updateScoreDisplay() {
     const stats = Integros.getStatsSnapshot(deckName, deck.length);
-    scoreText.textContent =
-      stats.correct + " right / " + stats.total + " total";
+    scoreText.textContent = stats.correct + " right / " + stats.total + " total";
   }
 
   function renderCard() {
     cardDeckNameEl.textContent = deckName;
+
     if (!deck.length) {
-      cardText.textContent =
-        "No cards in this deck. Go to Explore and load some.";
+      cardText.textContent = "No cards in this deck.\nGo to Explore and load some.";
       cardLabel.textContent = "Empty";
       cardIndexEl.textContent = "0";
       cardTotalEl.textContent = "0";
@@ -91,6 +144,7 @@
 
   function setMode(newMode) {
     mode = newMode;
+
     if (mode === "mc") {
       mcRow.style.display = "flex";
       typeRow.style.display = "none";
@@ -138,8 +192,15 @@
   function record(correct) {
     if (!deck.length) return;
     const spacedMode = mode === "spaced";
-    Integros.recordAnswer(deckName, deck.length, index, correct, spacedMode);
+    Integros.recordAnswer(
+      deckName,
+      deck.length,
+      index,
+      correct,
+      spacedMode
+    );
     updateScoreDisplay();
+
     if (spacedMode) {
       moveSpaced();
     } else {
@@ -149,6 +210,7 @@
 
   function prepareMultipleChoiceOptions() {
     if (!deck.length) return;
+
     const correctCard = deck[index];
     const all = deck.map(function (c) {
       return c.back;
@@ -156,6 +218,7 @@
 
     const choices = [];
     const used = new Set();
+
     choices.push(correctCard.back);
     used.add(correctCard.back);
 
@@ -171,6 +234,7 @@
       choices.push("N/A");
     }
 
+    // shuffle
     for (let i = choices.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
       const tmp = choices[i];
@@ -179,6 +243,7 @@
     }
 
     mcCorrectOptionIndex = choices.indexOf(correctCard.back);
+
     mcButtons.forEach(function (btn, idx) {
       btn.textContent = choices[idx];
       btn.classList.remove("btn-good", "btn-bad");
@@ -204,7 +269,7 @@
   function normalize(str) {
     return String(str || "")
       .trim()
-      .lowerCase()
+      .toLowerCase()
       .replace(/\s+/g, " ");
   }
 
@@ -212,13 +277,13 @@
     if (!deck.length) return;
     const expected = deck[index].back;
     const given = typeInput.value;
+    if (!given.trim()) return;
+
     const ok = normalize(expected) === normalize(given);
-    if (!given.trim()) {
-      return;
-    }
     record(ok);
   }
 
+  // Click listeners
   cardEl.addEventListener("click", flipCard);
   flipBtn.addEventListener("click", flipCard);
 
@@ -276,6 +341,7 @@
     }
   });
 
+  // Keyboard shortcuts
   document.addEventListener("keydown", function (e) {
     const tag = e.target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA") return;
@@ -296,6 +362,7 @@
     }
   });
 
+  // Init
   initDeckSelect();
   setMode(modeSelect.value);
   renderCard();
