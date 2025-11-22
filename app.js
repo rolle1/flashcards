@@ -1,4 +1,4 @@
-// Integros core: decks + localStorage + spaced helpers
+//  core: decks + localStorage + spaced helpers
 (function () {
   const STORAGE_KEY = "integros-flashcards-v1";
 
