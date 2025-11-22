@@ -1,4 +1,6 @@
+// Deck Explorer logic + Deck Library, New deck, delete, and JSON tools
 (function () {
+  // Curated decks for the top "Deck Library" cards.
   const STATIC_DECKS = [
     {
       id: "AZ-900 Fundamentals",
@@ -45,95 +47,112 @@
     statusEl.style.color = ok ? "#4ade80" : "#fca5a5";
   }
 
-  function ensureStaticDecksExist() {
-    if (!window.Integros) return;
+  // Build a card element
+  function createDeckCard(id, titleText, levelText, descText, tagsArr) {
+    const card = document.createElement("article");
+    card.className = "deck-card";
 
-    const existing = Integros.getDecks();
-    const payload = {};
+    const title = document.createElement("h3");
+    title.textContent = titleText;
 
-    STATIC_DECKS.forEach(d => {
-      if (!existing[d.id]) {
-        payload[d.id] = [];
-      }
+    const meta = document.createElement("p");
+    meta.className = "deck-meta";
+    meta.textContent = levelText;
+
+    const desc = document.createElement("p");
+    desc.className = "deck-desc";
+    desc.textContent = descText;
+
+    const tags = document.createElement("div");
+    tags.className = "deck-tags";
+    (tagsArr || []).forEach(t => {
+      const tag = document.createElement("span");
+      tag.className = "deck-tag";
+      tag.textContent = t;
+      tags.appendChild(tag);
     });
 
-    if (Object.keys(payload).length > 0 && Integros.mergeDecks) {
-      Integros.mergeDecks(payload);
-    }
+    const actions = document.createElement("div");
+    actions.className = "deck-actions";
+
+    const studyLink = document.createElement("a");
+    studyLink.href = "study.html?deck=" + encodeURIComponent(id);
+    studyLink.className = "btn-pill";
+    studyLink.textContent = "Study deck";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "btn-pill btn-bad";
+    deleteBtn.textContent = "Delete";
+
+    deleteBtn.addEventListener("click", function () {
+      const confirmed = window.confirm("Delete deck '" + id + "'?");
+      if (!confirmed) return;
+
+      const result = Integros.deleteDeck(id);
+
+      if (!result.ok) {
+        window.alert(
+          "Could not delete deck: " + (result.reason || "Unknown error")
+        );
+        return;
+      }
+
+      setStatus("Deleted deck '" + id + "'.", true);
+      renderDecks();
+    });
+
+    actions.appendChild(studyLink);
+    actions.appendChild(deleteBtn);
+
+    card.appendChild(title);
+    card.appendChild(meta);
+    card.appendChild(desc);
+    card.appendChild(tags);
+    card.appendChild(actions);
+
+    return card;
   }
 
-  function renderStaticDecks() {
+  // Render all decks (static + custom)
+  function renderDecks() {
     if (!deckGridEl) return;
 
     deckGridEl.innerHTML = "";
 
+    const allDecks = Integros.getDecks();
+    const staticIds = STATIC_DECKS.map(d => d.id);
+
+    // Render static curated decks first
     STATIC_DECKS.forEach(deck => {
-      const card = document.createElement("article");
-      card.className = "deck-card";
-
-      const title = document.createElement("h3");
-      title.textContent = deck.title;
-
-      const meta = document.createElement("p");
-      meta.className = "deck-meta";
-      meta.textContent = deck.level;
-
-      const desc = document.createElement("p");
-      desc.className = "deck-desc";
-      desc.textContent = deck.description;
-
-      const tags = document.createElement("div");
-      tags.className = "deck-tags";
-      deck.tags.forEach(tagText => {
-        const tag = document.createElement("span");
-        tag.className = "deck-tag";
-        tag.textContent = tagText;
-        tags.appendChild(tag);
-      });
-
-      const actions = document.createElement("div");
-      actions.className = "deck-actions";
-
-      const studyLink = document.createElement("a");
-      studyLink.href = "study.html?deck=" + encodeURIComponent(deck.id);
-      studyLink.className = "btn-pill";
-      studyLink.textContent = "Study deck";
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.type = "button";
-      deleteBtn.className = "btn-pill btn-bad";
-      deleteBtn.textContent = "Delete";
-
-      deleteBtn.addEventListener("click", () => {
-        const confirmed = window.confirm(
-          "Delete deck '" + deck.id + "' from this browser?"
-        );
-        if (!confirmed) return;
-
-        const result = Integros.deleteDeck(deck.id);
-        if (!result.ok) {
-          window.alert("Could not delete deck: " + result.reason);
-          return;
-        }
-        setStatus("Deleted deck '" + deck.id + "'.", true);
-      });
-
-      actions.appendChild(studyLink);
-      actions.appendChild(deleteBtn);
-
-      card.appendChild(title);
-      card.appendChild(meta);
-      card.appendChild(desc);
-      card.appendChild(tags);
-      card.appendChild(actions);
-
+      const card = createDeckCard(
+        deck.id,
+        deck.title,
+        deck.level,
+        deck.description,
+        deck.tags
+      );
       deckGridEl.appendChild(card);
+    });
+
+    // Render custom decks
+    Object.keys(allDecks).forEach(deckName => {
+      if (!staticIds.includes(deckName)) {
+        const card = createDeckCard(
+          deckName,
+          deckName,
+          "Custom deck",
+          "Your personal deck.",
+          []
+        );
+        deckGridEl.appendChild(card);
+      }
     });
   }
 
-  // Add new deck
+  // New deck creation
   if (newDeckBtn) {
-    newDeckBtn.addEventListener("click", () => {
+    newDeckBtn.addEventListener("click", function () {
       if (!window.Integros || !Integros.mergeDecks) {
         window.alert("New deck is not available. Engine not loaded.");
         return;
@@ -157,13 +176,17 @@
 
       const payload = {};
       payload[trimmed] = [];
+
       Integros.mergeDecks(payload);
       setStatus("Created new empty deck '" + trimmed + "'.", true);
+
+      renderDecks();
     });
   }
 
+  // JSON Import
   if (importBtn) {
-    importBtn.addEventListener("click", () => {
+    importBtn.addEventListener("click", function () {
       clearStatus();
       if (!jsonArea) {
         setStatus("JSON box not found.", false);
@@ -184,24 +207,32 @@
           parsed === null ||
           Array.isArray(parsed)
         ) {
-          setStatus("Wrong format. Use { \"Deck Name\": [ {\"front\":\"\",\"back\":\"\"} ] }", false);
+          setStatus(
+            'Wrong format. Must look like: { "Deck Name": [ { "front": "", "back": "" } ] }',
+            false
+          );
           return;
         }
 
-        const deckNames = Object.keys(parsed);
-        if (!deckNames.length) {
-          setStatus("Missing deck name key.", false);
-          return;
-        }
-
-        deckNames.forEach(deckName => {
+        Object.keys(parsed).forEach(deckName => {
           const arr = parsed[deckName];
           if (!Array.isArray(arr)) {
             throw new Error("Deck " + deckName + " is not an array.");
           }
+
           arr.forEach((card, idx) => {
-            if (!card || typeof card.front !== "string" || typeof card.back !== "string") {
-              throw new Error("Deck " + deckName + " card " + idx + " missing front/back.");
+            if (
+              !card ||
+              typeof card.front !== "string" ||
+              typeof card.back !== "string"
+            ) {
+              throw new Error(
+                "Deck " +
+                  deckName +
+                  " card " +
+                  idx +
+                  " missing front/back string."
+              );
             }
           });
         });
@@ -209,6 +240,7 @@
         Integros.mergeDecks(parsed);
         setStatus("Imported JSON decks successfully.", true);
 
+        renderDecks();
       } catch (err) {
         console.error(err);
         setStatus("Invalid JSON. Fix formatting and try again.", false);
@@ -216,18 +248,20 @@
     });
   }
 
+  // JSON Export
   if (exportBtn) {
-    exportBtn.addEventListener("click", () => {
+    exportBtn.addEventListener("click", function () {
       clearStatus();
       if (!jsonArea) {
         setStatus("JSON area missing.", false);
         return;
       }
+
       jsonArea.value = JSON.stringify(Integros.getDecks(), null, 2);
       setStatus("Exported current decks.", true);
     });
   }
 
-  ensureStaticDecksExist();
-  renderStaticDecks();
+  // Start
+  renderDecks();
 })();
