@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Explore Decks – Integros Flashcards</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
 </head>
 <body>
   <div class="app-shell">
-
     <header class="brand-header">
       <div class="brand-logo-wrap">
-        <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
+        <img src="assets/integros-logo.png" class="brand-logo" alt="Integros" />
       </div>
       <div class="brand-text">
         <h1>Integros Flashcards</h1>
@@ -27,64 +26,44 @@
     </header>
 
     <main class="page-main explore-main">
-      <!-- Deck library section -->
       <section class="page-section">
         <div class="section-header-row">
           <div>
             <h2>Deck Library</h2>
             <p class="section-subtitle">
-              Curated decks plus any custom decks you create in this browser.
+              Curated decks plus any custom decks you create.
             </p>
           </div>
 
-          <!-- New: Add deck button -->
           <div class="section-actions">
-            <button id="newDeckBtn" class="btn-pill">
-              + Add deck
-            </button>
+            <button id="newDeckBtn" class="btn-pill">+ Add deck</button>
           </div>
         </div>
 
-        <div id="deck-grid" class="deck-grid">
-          <!-- Deck cards rendered by explore.js -->
-        </div>
+        <div id="deck-grid" class="deck-grid"></div>
       </section>
 
-      <!-- JSON tools section -->
       <section class="page-section json-tools">
         <h2>JSON tools</h2>
         <p class="section-subtitle">
-          Import or export decks as JSON. Use this to back up, share, or bulk edit your decks.
+          Import or export decks as JSON.
         </p>
 
-        <label for="jsonArea" class="field-label">
-          Deck JSON
-        </label>
+        <label class="field-label" for="jsonArea">Deck JSON</label>
         <textarea
           id="jsonArea"
           class="json-textarea"
           rows="14"
           spellcheck="false"
-          placeholder='Example:
-{
-  "AZ-900 Fundamentals": [
-    { "front": "What is Azure?", "back": "Microsoft&#39;s cloud platform." }
-  ]
-}'
+          placeholder='{ "My Deck": [ { "front": "Question", "back": "Answer" } ] }'
         ></textarea>
 
         <div class="json-actions">
-          <button id="importBtn" class="btn-pill">
-            Import JSON decks
-          </button>
-          <button id="exportBtn" class="btn-pill btn-secondary">
-            Export current decks
-          </button>
+          <button id="importBtn" class="btn-pill">Import JSON decks</button>
+          <button id="exportBtn" class="btn-pill btn-secondary">Export current decks</button>
         </div>
 
-        <p id="jsonStatus" class="json-status">
-          <!-- Status messages set by explore.js -->
-        </p>
+        <p id="jsonStatus" class="json-status"></p>
       </section>
     </main>
 
@@ -93,7 +72,10 @@
     </footer>
   </div>
 
+  <!-- Load engine first -->
   <script src="app.js"></script>
+
+  <!-- Then the explorer logic -->
   <script src="explore.js"></script>
 </body>
 </html>
