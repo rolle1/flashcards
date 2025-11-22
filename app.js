@@ -1,4 +1,4 @@
-//  core: decks + localStorage + spaced helpers
+// Integros core: decks + localStorage + spaced helpers
 (function () {
   const STORAGE_KEY = "integros-flashcards-v1";
 
@@ -7,7 +7,7 @@
     "AZ-900 Fundamentals": [
       { front: "What is Azure?", back: "Microsoft's cloud platform." },
       { front: "What does IaaS stand for?", back: "Infrastructure as a Service." },
-      { front: "What does PaaS stand for?", back: "Platform as a Service." },
+      { front: "What does PaaS stand stand for?", back: "Platform as a Service." },
       { front: "What does SaaS stand for?", back: "Software as a Service." }
     ],
     "Infra Core Concepts": [
@@ -17,21 +17,21 @@
       },
       {
         front: "Why do we take backups?",
-        back: "To restore data and systems after failure, corruption, or loss."
+        back: "To restore data after failure or corruption."
       },
       {
         front: "What does 'on-premises' mean?",
-        back: "Infrastructure hosted in your own facilities instead of public cloud."
+        back: "Infrastructure hosted in your own facilities instead of cloud."
       }
     ],
     "ITAM & CMDB": [
       { front: "What does ITAM stand for?", back: "IT Asset Management." },
       {
         front: "Goal of hardware lifecycle?",
-        back: "Control cost, risk, and value across the hardware life."
+        back: "Control cost, risk, and value across the hardware lifecycle."
       },
       {
-        front: "Example of hardware asset",
+        front: "Example of a hardware asset",
         back: "Laptop, desktop, server, switch, mobile device."
       }
     ],
@@ -87,7 +87,7 @@
     saveState();
   }
 
-  // ✅ NEW: mergeDecks so Explore can create decks + import JSON properly
+  // NEW — mergeDecks (required for Explore)
   function mergeDecks(newDecks) {
     const s = loadState();
     const decks = s.decks || {};
@@ -135,11 +135,7 @@
       if (spacedMode) {
         const boxes = st.boxes;
         const current = boxes[cardIndex] || 1;
-        if (correct) {
-          boxes[cardIndex] = Math.min(4, current + 1);
-        } else {
-          boxes[cardIndex] = 1;
-        }
+        boxes[cardIndex] = correct ? Math.min(4, current + 1) : 1;
       }
     });
   }
@@ -157,18 +153,17 @@
     const weightsForBox = [0, 4, 2, 1, 1];
 
     const bag = [];
-    for (let i = 0; i < deckLength; i += 1) {
+    for (let i = 0; i < deckLength; i++) {
       const box = boxes[i] || 1;
       const w = weightsForBox[box] || 1;
-      for (let k = 0; k < w; k += 1) {
+      for (let k = 0; k < w; k++) {
         bag.push(i);
       }
     }
     if (!bag.length) {
       return Math.floor(Math.random() * deckLength);
     }
-    const pick = bag[Math.floor(Math.random() * bag.length)];
-    return pick;
+    return bag[Math.floor(Math.random() * bag.length)];
   }
 
   function getStatsSnapshot(deckName, deckLength) {
@@ -191,18 +186,10 @@
     const s = loadState();
     const trimmed = (newName || "").trim();
 
-    if (!s.decks[oldName]) {
-      return { ok: false, reason: "Deck not found." };
-    }
-    if (!trimmed) {
-      return { ok: false, reason: "Name cannot be empty." };
-    }
-    if (trimmed === oldName) {
-      return { ok: true };
-    }
-    if (s.decks[trimmed]) {
-      return { ok: false, reason: "A deck with that name already exists." };
-    }
+    if (!s.decks[oldName]) return { ok: false, reason: "Deck not found." };
+    if (!trimmed) return { ok: false, reason: "Name cannot be empty." };
+    if (trimmed === oldName) return { ok: true };
+    if (s.decks[trimmed]) return { ok: false, reason: "Deck already exists." };
 
     s.decks[trimmed] = s.decks[oldName];
     delete s.decks[oldName];
@@ -216,11 +203,11 @@
     return { ok: true };
   }
 
-  // Final export
+  // EXPORT ENGINE
   window.Integros = {
     getDecks,
     replaceDecks,
-    mergeDecks,  // <-- NEW
+    mergeDecks,
     getDeckStats,
     getStatsSnapshot,
     recordAnswer,
