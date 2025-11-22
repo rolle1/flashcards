@@ -17,21 +17,21 @@
       },
       {
         front: "Why do we take backups?",
-        back: "To be able to restore data and systems after failure, corruption, or loss."
+        back: "To restore data and systems after failure, corruption, or loss."
       },
       {
         front: "What does 'on-premises' mean?",
-        back: "Infrastructure hosted in your own facilities instead of a public cloud."
+        back: "Infrastructure hosted in your own facilities instead of public cloud."
       }
     ],
     "ITAM & CMDB": [
       { front: "What does ITAM stand for?", back: "IT Asset Management." },
       {
-        front: "Main goal of hardware lifecycle?",
+        front: "Goal of hardware lifecycle?",
         back: "Control cost, risk, and value across the hardware life."
       },
       {
-        front: "Example of a hardware asset",
+        front: "Example of hardware asset",
         back: "Laptop, desktop, server, switch, mobile device."
       }
     ],
@@ -73,9 +73,7 @@
     if (!stateCache) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stateCache));
-    } catch (e) {
-      // ignore storage errors
-    }
+    } catch (e) {}
   }
 
   function getDecks() {
@@ -86,6 +84,19 @@
     const s = loadState();
     s.decks = newDecks;
     s.stats = {};
+    saveState();
+  }
+
+  // ✅ NEW: mergeDecks so Explore can create decks + import JSON properly
+  function mergeDecks(newDecks) {
+    const s = loadState();
+    const decks = s.decks || {};
+
+    Object.keys(newDecks).forEach(name => {
+      decks[name] = newDecks[name];
+    });
+
+    s.decks = decks;
     saveState();
   }
 
@@ -165,21 +176,17 @@
     return { correct: st.correct, total: st.total };
   }
 
-  // Delete a deck and its stats from localStorage
   function deleteDeck(deckName) {
     const s = loadState();
     if (!s.decks[deckName]) {
       return { ok: false, reason: "Deck not found." };
     }
     delete s.decks[deckName];
-    if (s.stats[deckName]) {
-      delete s.stats[deckName];
-    }
+    if (s.stats[deckName]) delete s.stats[deckName];
     saveState();
     return { ok: true };
   }
 
-  // Rename a deck and keep its stats
   function renameDeck(oldName, newName) {
     const s = loadState();
     const trimmed = (newName || "").trim();
@@ -209,15 +216,17 @@
     return { ok: true };
   }
 
+  // Final export
   window.Integros = {
-    getDecks: getDecks,
-    replaceDecks: replaceDecks,
-    getDeckStats: getDeckStats,
-    getStatsSnapshot: getStatsSnapshot,
-    recordAnswer: recordAnswer,
-    getLastIndex: getLastIndex,
-    chooseSpacedIndex: chooseSpacedIndex,
-    deleteDeck: deleteDeck,
-    renameDeck: renameDeck
+    getDecks,
+    replaceDecks,
+    mergeDecks,  // <-- NEW
+    getDeckStats,
+    getStatsSnapshot,
+    recordAnswer,
+    getLastIndex,
+    chooseSpacedIndex,
+    deleteDeck,
+    renameDeck
   };
 })();
