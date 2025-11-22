@@ -7,7 +7,7 @@
     "AZ-900 Fundamentals": [
       { front: "What is Azure?", back: "Microsoft's cloud platform." },
       { front: "What does IaaS stand for?", back: "Infrastructure as a Service." },
-      { front: "What does PaaS stand stand for?", back: "Platform as a Service." },
+      { front: "What does PaaS stand for?", back: "Platform as a Service." },
       { front: "What does SaaS stand for?", back: "Software as a Service." }
     ],
     "Infra Core Concepts": [
@@ -21,7 +21,7 @@
       },
       {
         front: "What does 'on-premises' mean?",
-        back: "Infrastructure hosted in your own facilities instead of cloud."
+        back: "Infrastructure hosted in your own facilities instead of a public cloud."
       }
     ],
     "ITAM & CMDB": [
@@ -73,7 +73,9 @@
     if (!stateCache) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stateCache));
-    } catch (e) {}
+    } catch (e) {
+      // ignore storage errors
+    }
   }
 
   function getDecks() {
@@ -87,7 +89,7 @@
     saveState();
   }
 
-  // NEW — mergeDecks (required for Explore)
+  // Merge decks into existing state (used by Explore + JSON import)
   function mergeDecks(newDecks) {
     const s = loadState();
     const decks = s.decks || {};
@@ -153,17 +155,18 @@
     const weightsForBox = [0, 4, 2, 1, 1];
 
     const bag = [];
-    for (let i = 0; i < deckLength; i++) {
+    for (let i = 0; i < deckLength; i += 1) {
       const box = boxes[i] || 1;
       const w = weightsForBox[box] || 1;
-      for (let k = 0; k < w; k++) {
+      for (let k = 0; k < w; k += 1) {
         bag.push(i);
       }
     }
     if (!bag.length) {
       return Math.floor(Math.random() * deckLength);
     }
-    return bag[Math.floor(Math.random() * bag.length)];
+    const pick = bag[Math.floor(Math.random() * bag.length)];
+    return pick;
   }
 
   function getStatsSnapshot(deckName, deckLength) {
@@ -186,10 +189,18 @@
     const s = loadState();
     const trimmed = (newName || "").trim();
 
-    if (!s.decks[oldName]) return { ok: false, reason: "Deck not found." };
-    if (!trimmed) return { ok: false, reason: "Name cannot be empty." };
-    if (trimmed === oldName) return { ok: true };
-    if (s.decks[trimmed]) return { ok: false, reason: "Deck already exists." };
+    if (!s.decks[oldName]) {
+      return { ok: false, reason: "Deck not found." };
+    }
+    if (!trimmed) {
+      return { ok: false, reason: "Name cannot be empty." };
+    }
+    if (trimmed === oldName) {
+      return { ok: true };
+    }
+    if (s.decks[trimmed]) {
+      return { ok: false, reason: "A deck with that name already exists." };
+    }
 
     s.decks[trimmed] = s.decks[oldName];
     delete s.decks[oldName];
@@ -203,7 +214,7 @@
     return { ok: true };
   }
 
-  // EXPORT ENGINE
+  // Final export
   window.Integros = {
     getDecks,
     replaceDecks,
