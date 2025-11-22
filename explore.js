@@ -1,4 +1,3 @@
-// File: explore.js
 // Deck Explorer logic + Deck Library, New deck, delete, and JSON tools
 (function () {
   // Curated decks for the top "Deck Library" cards.
@@ -27,6 +26,14 @@
       description:
         "Assets, lifecycle states, relationships, clean configuration data.",
       tags: ["ITAM", "CMDB"]
+    },
+    {
+      id: "Edwin Resume Deck",
+      title: "Edwin Resume Deck",
+      level: "Meta",
+      description:
+        "Drill your own resume, portfolio, and story until you can say it on command.",
+      tags: ["Resume", "Career", "Meta"]
     }
   ];
 
@@ -151,8 +158,8 @@
 
       const name = window.prompt(
         "Enter a deck name.\n\n" +
-        "This name **must** be used inside the JSON:\n" +
-        '{\n  "Your Deck Name": [ { "front": "...", "back": "..." } ]\n}'
+          "This name **must** be used inside the JSON:\n" +
+          '{\n  "Your Deck Name": [ { "front": "...", "back": "..." } ]\n}'
       );
 
       if (!name) return;
