@@ -1,3 +1,8 @@
+// Study page logic.  Handles card navigation, spaced repetition,
+// multiple-choice and type modes, and progress reset.  It also
+// remembers the last selected deck and study mode in localStorage
+// and persists them across sessions.
+
 (function () {
   const deckSelect = document.getElementById("deckSelect");
   const modeSelect = document.getElementById("modeSelect");
@@ -23,6 +28,9 @@
   const typeRow = document.getElementById("typeRow");
   const typeInput = document.getElementById("typeInput");
   const typeCheckBtn = document.getElementById("typeCheckBtn");
+
+  // Reset button for clearing progress
+  const resetBtn = document.getElementById("resetBtn");
 
   let deckName = "";
   let deck = [];
@@ -90,6 +98,25 @@
     return d;
   }
 
+  // Load previously selected deck and mode from localStorage
+  function loadFromLocalStorage(decks) {
+    try {
+      const lastDeck = window.localStorage.getItem("integros-lastDeck");
+      const lastMode = window.localStorage.getItem("integros-lastMode");
+      if (lastDeck && decks[lastDeck]) {
+        deckName = lastDeck;
+      }
+      if (
+        lastMode &&
+        ["normal", "spaced", "mc", "type"].indexOf(lastMode) !== -1
+      ) {
+        mode = lastMode;
+      }
+    } catch (err) {
+      // ignore storage errors
+    }
+  }
+
   function initDeckSelect() {
     const decks = Integros.getDecks();
     const keys = Object.keys(decks);
@@ -106,7 +133,11 @@
     if (urlDeck && decks[urlDeck]) {
       deckName = urlDeck;
     } else {
-      deckName = keys[0] || "";
+      // Load last saved deck and mode
+      loadFromLocalStorage(decks);
+      if (!deckName) {
+        deckName = keys[0] || "";
+      }
     }
 
     deckSelect.value = deckName;
@@ -144,6 +175,12 @@
 
   function setMode(newMode) {
     mode = newMode;
+    // Persist mode selection
+    try {
+      window.localStorage.setItem("integros-lastMode", mode);
+    } catch (err) {
+      // ignore
+    }
 
     if (mode === "mc") {
       mcRow.style.display = "flex";
@@ -192,15 +229,8 @@
   function record(correct) {
     if (!deck.length) return;
     const spacedMode = mode === "spaced";
-    Integros.recordAnswer(
-      deckName,
-      deck.length,
-      index,
-      correct,
-      spacedMode
-    );
+    Integros.recordAnswer(deckName, deck.length, index, correct, spacedMode);
     updateScoreDisplay();
-
     if (spacedMode) {
       moveSpaced();
     } else {
@@ -210,18 +240,14 @@
 
   function prepareMultipleChoiceOptions() {
     if (!deck.length) return;
-
     const correctCard = deck[index];
     const all = deck.map(function (c) {
       return c.back;
     });
-
     const choices = [];
     const used = new Set();
-
     choices.push(correctCard.back);
     used.add(correctCard.back);
-
     while (choices.length < 4 && choices.length < all.length) {
       const candidate = all[Math.floor(Math.random() * all.length)];
       if (!used.has(candidate)) {
@@ -229,11 +255,9 @@
         choices.push(candidate);
       }
     }
-
     while (choices.length < 4) {
       choices.push("N/A");
     }
-
     // shuffle
     for (let i = choices.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -241,9 +265,7 @@
       choices[i] = choices[j];
       choices[j] = tmp;
     }
-
     mcCorrectOptionIndex = choices.indexOf(correctCard.back);
-
     mcButtons.forEach(function (btn, idx) {
       btn.textContent = choices[idx];
       btn.classList.remove("btn-good", "btn-bad");
@@ -253,7 +275,6 @@
   function handleMultipleChoiceClick(selectedIndex) {
     if (mcCorrectOptionIndex == null) return;
     const correct = selectedIndex === mcCorrectOptionIndex;
-
     mcButtons.forEach(function (btn, idx) {
       btn.classList.remove("btn-good", "btn-bad");
       if (idx === mcCorrectOptionIndex) {
@@ -262,7 +283,6 @@
         btn.classList.add("btn-bad");
       }
     });
-
     record(correct);
   }
 
@@ -278,7 +298,6 @@
     const expected = deck[index].back;
     const given = typeInput.value;
     if (!given.trim()) return;
-
     const ok = normalize(expected) === normalize(given);
     record(ok);
   }
@@ -286,7 +305,6 @@
   // Click listeners
   cardEl.addEventListener("click", flipCard);
   flipBtn.addEventListener("click", flipCard);
-
   prevBtn.addEventListener("click", function () {
     if (mode === "spaced") {
       moveSpaced();
@@ -294,7 +312,6 @@
       move(-1);
     }
   });
-
   nextBtn.addEventListener("click", function () {
     if (mode === "spaced") {
       moveSpaced();
@@ -302,15 +319,12 @@
       move(1);
     }
   });
-
   rightBtn.addEventListener("click", function () {
     record(true);
   });
-
   wrongBtn.addEventListener("click", function () {
     record(false);
   });
-
   deckSelect.addEventListener("change", function (e) {
     const decks = Integros.getDecks();
     deckName = e.target.value;
@@ -318,22 +332,24 @@
     index = Integros.getLastIndex(deckName, deck.length);
     showingBack = false;
     renderCard();
+    // Persist deck
+    try {
+      window.localStorage.setItem("integros-lastDeck", deckName);
+    } catch (err) {
+      // ignore
+    }
   });
-
   modeSelect.addEventListener("change", function (e) {
     setMode(e.target.value);
     renderCard();
   });
-
   mcButtons.forEach(function (btn) {
     btn.addEventListener("click", function () {
       const idx = parseInt(btn.getAttribute("data-index"), 10);
       handleMultipleChoiceClick(idx);
     });
   });
-
   typeCheckBtn.addEventListener("click", handleTypeCheck);
-
   typeInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -345,7 +361,6 @@
   document.addEventListener("keydown", function (e) {
     const tag = e.target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA") return;
-
     if (e.code === "Space") {
       e.preventDefault();
       flipCard();
@@ -362,8 +377,40 @@
     }
   });
 
-  // Init
+  // Reset progress handler
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      const msg = deckName
+        ? "Reset progress for '" + deckName + "'?"
+        : "Reset all progress?";
+      const confirmed = window.confirm(msg);
+      if (!confirmed) return;
+      if (deckName) {
+        Integros.resetStats(deckName);
+      } else {
+        Integros.resetStats();
+      }
+      index = 0;
+      showingBack = false;
+      updateScoreDisplay();
+      renderCard();
+      if (typeof showToast === "function") {
+        showToast("Progress reset.", true);
+      }
+    });
+  }
+
+  // Initialize
   initDeckSelect();
-  setMode(modeSelect.value);
+  // Ensure the persisted mode is valid
+  if (["normal", "spaced", "mc", "type"].indexOf(mode) === -1) {
+    mode = "normal";
+  }
+  // Sync the mode <select> to the stored mode
+  if (modeSelect) {
+    modeSelect.value = mode;
+  }
+  // Apply mode settings
+  setMode(mode);
   renderCard();
 })();

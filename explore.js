@@ -1,40 +1,8 @@
-<<<<<<< HEAD
 // Deck Explorer logic + Deck Library, New deck, delete, rename, and JSON tools
 // This script drives the Explore page.  It displays all decks (both default
 // and custom), allows users to create new decks, rename or delete existing
 // decks, and import/export decks as JSON.  It relies on the Integros API
 // defined in app.js for storage and deck operations.
-=======
-// Deck Explorer logic + Deck Library, New deck, delete, and JSON tools
-(function () {
-  // Curated decks for the top "Deck Library" cards.
-  const STATIC_DECKS = [
-    {
-      id: "AZ-900 Fundamentals",
-      title: "AZ-900 Fundamentals",
-      level: "Beginner",
-      description:
-        "Core Azure concepts, global infrastructure, pricing, and security basics.",
-      tags: ["Azure", "Cloud", "Exam"]
-    },
-    {
-      id: "Infra Core Concepts",
-      title: "Infra Core Concepts",
-      level: "Intermediate",
-      description:
-        "Servers, storage, networks, backups. The foundation of infra operations.",
-      tags: ["Infra", "Ops"]
-    },
-    {
-      id: "ITAM & CMDB",
-      title: "ITAM & CMDB",
-      level: "Intermediate",
-      description:
-        "Assets, lifecycle states, relationships, clean configuration data.",
-      tags: ["ITAM", "CMDB"]
-    }
-  ];
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
 (function () {
   const deckGridEl = document.getElementById("deck-grid");
@@ -56,18 +24,11 @@
     statusEl.style.color = ok ? "#4ade80" : "#fca5a5";
   }
 
-<<<<<<< HEAD
   // Build a card element for the deck library.  Each card shows the deck
   // title, level, description, tags, and buttons to study, rename and delete.
   function createDeckCard(id, titleText, levelText, descText, tagsArr) {
     const card = document.createElement("article");
     card.className = "deck-card";
-=======
-  // Build a card element
-  function createDeckCard(id, titleText, levelText, descText, tagsArr) {
-    const card = document.createElement("article");
-    card.className = "deck-card";
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
     const title = document.createElement("h3");
     title.textContent = titleText;
@@ -80,7 +41,6 @@
     desc.className = "deck-desc";
     desc.textContent = descText;
 
-<<<<<<< HEAD
     const tags = document.createElement("div");
     tags.className = "deck-tags";
     (tagsArr || []).forEach((t) => {
@@ -89,16 +49,6 @@
       tag.textContent = t;
       tags.appendChild(tag);
     });
-=======
-    const tags = document.createElement("div");
-    tags.className = "deck-tags";
-    (tagsArr || []).forEach(t => {
-      const tag = document.createElement("span");
-      tag.className = "deck-tag";
-      tag.textContent = t;
-      tags.appendChild(tag);
-    });
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
     const actions = document.createElement("div");
     actions.className = "deck-actions";
@@ -108,20 +58,12 @@
     studyLink.className = "btn-pill";
     studyLink.textContent = "Study deck";
 
-<<<<<<< HEAD
     // Edit button (open the edit page for this deck)
     const editLink = document.createElement("a");
     editLink.href = "edit.html?deck=" + encodeURIComponent(id);
     editLink.className = "btn-pill";
     editLink.textContent = "Edit";
-=======
-    const deleteBtn = document.createElement("button");
-    deleteBtn.type = "button";
-    deleteBtn.className = "btn-pill btn-bad";
-    deleteBtn.textContent = "Delete";
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
-<<<<<<< HEAD
     // Rename button
     const renameBtn = document.createElement("button");
     renameBtn.type = "button";
@@ -141,13 +83,7 @@
       setStatus("Renamed deck '" + id + "' to '" + trimmed + "'.", true);
       renderDecks();
     });
-=======
-    deleteBtn.addEventListener("click", function () {
-      const confirmed = window.confirm("Delete deck '" + id + "'?");
-      if (!confirmed) return;
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
-<<<<<<< HEAD
     // Delete button
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
@@ -165,45 +101,21 @@
       setStatus("Deleted deck '" + id + "'.", true);
       renderDecks();
     });
-=======
-      const result = Integros.deleteDeck(id);
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
-<<<<<<< HEAD
     actions.appendChild(studyLink);
     actions.appendChild(editLink);
     actions.appendChild(renameBtn);
     actions.appendChild(deleteBtn);
-=======
-      if (!result.ok) {
-        window.alert(
-          "Could not delete deck: " + (result.reason || "Unknown error")
-        );
-        return;
-      }
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
-<<<<<<< HEAD
     card.appendChild(title);
     card.appendChild(meta);
     card.appendChild(desc);
     card.appendChild(tags);
     card.appendChild(actions);
-=======
-      setStatus("Deleted deck '" + id + "'.", true);
-      renderDecks();
-    });
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
-<<<<<<< HEAD
     return card;
   }
-=======
-    actions.appendChild(studyLink);
-    actions.appendChild(deleteBtn);
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 
-<<<<<<< HEAD
   // Render all decks.  Pull deck names from Integros.getDecks() and
   // metadata from Integros.getDeckMetadata().  Custom decks fall back
   // to a generic level and description.
@@ -220,58 +132,11 @@
       const desc = m.description || (m.title ? m.description : "Your personal deck.");
       const tagsArr = m.tags || [];
       const card = createDeckCard(deckName, title, level, desc, tagsArr);
-=======
-    card.appendChild(title);
-    card.appendChild(meta);
-    card.appendChild(desc);
-    card.appendChild(tags);
-    card.appendChild(actions);
-
-    return card;
-  }
-
-  // Render all decks (static + custom)
-  function renderDecks() {
-    if (!deckGridEl) return;
-
-    deckGridEl.innerHTML = "";
-
-    const allDecks = Integros.getDecks();
-    const staticIds = STATIC_DECKS.map(d => d.id);
-
-    // Render static curated decks first
-    STATIC_DECKS.forEach(deck => {
-      const card = createDeckCard(
-        deck.id,
-        deck.title,
-        deck.level,
-        deck.description,
-        deck.tags
-      );
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
       deckGridEl.appendChild(card);
     });
-
-    // Render custom decks
-    Object.keys(allDecks).forEach(deckName => {
-      if (!staticIds.includes(deckName)) {
-        const card = createDeckCard(
-          deckName,
-          deckName,
-          "Custom deck",
-          "Your personal deck.",
-          []
-        );
-        deckGridEl.appendChild(card);
-      }
-    });
   }
 
-<<<<<<< HEAD
   // New deck creation with name validation
-=======
-  // New deck creation
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
   if (newDeckBtn) {
     newDeckBtn.addEventListener("click", function () {
       clearStatus();
@@ -279,12 +144,7 @@
         window.alert("New deck is not available. Engine not loaded.");
         return;
       }
-<<<<<<< HEAD
       const name = window.prompt("Enter a deck name:");
-=======
-
-      const name = window.prompt("Enter a deck name:");
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
       if (!name) return;
       const trimmed = name.trim();
       if (!trimmed) {
@@ -314,12 +174,7 @@
       Integros.mergeDecks(payload);
       showToast("Created new deck '" + trimmed + "'.", true);
       setStatus("Created new empty deck '" + trimmed + "'.", true);
-<<<<<<< HEAD
       renderDecks();
-=======
-
-      renderDecks();
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
     });
   }
 
@@ -349,7 +204,6 @@
           );
           return;
         }
-<<<<<<< HEAD
         Object.keys(parsed).forEach((deckName) => {
           const trimmedName = (deckName || "").trim();
           if (!trimmedName) {
@@ -367,20 +221,11 @@
                 "'. Names must be 2–50 characters (letters, numbers, spaces or hyphens)."
             );
           }
-=======
-
-        Object.keys(parsed).forEach(deckName => {
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
           const arr = parsed[deckName];
           if (!Array.isArray(arr)) {
             throw new Error("Deck " + deckName + " is not an array.");
           }
-<<<<<<< HEAD
           arr.forEach((card, idx) => {
-=======
-
-          arr.forEach((card, idx) => {
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
             if (
               !card ||
               typeof card.front !== "string" ||
@@ -398,20 +243,10 @@
             }
           });
         });
-<<<<<<< HEAD
         Integros.mergeDecks(parsed);
         showToast("Imported decks successfully.", true);
-=======
-
-        Integros.mergeDecks(parsed);
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
         setStatus("Imported JSON decks successfully.", true);
-<<<<<<< HEAD
         renderDecks();
-=======
-
-        renderDecks();
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
       } catch (err) {
         console.error(err);
         showToast(err.message || "Invalid JSON.", false);
@@ -428,18 +263,12 @@
         setStatus("JSON area missing.", false);
         return;
       }
-
       jsonArea.value = JSON.stringify(Integros.getDecks(), null, 2);
       showToast("Exported current decks.", true);
       setStatus("Exported current decks.", true);
     });
   }
 
-<<<<<<< HEAD
   // Initialize the deck library
   renderDecks();
-=======
-  // Start
-  renderDecks();
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
 })();

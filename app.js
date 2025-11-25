@@ -120,7 +120,6 @@
     saveState();
   }
 
-<<<<<<< HEAD
   // Merge decks into existing state (used by Explore + JSON import)
   function mergeDecks(newDecks) {
     const s = loadState();
@@ -132,21 +131,6 @@
     saveState();
   }
 
-=======
-  // Merge decks into existing state (used by Explore + JSON import)
-  function mergeDecks(newDecks) {
-    const s = loadState();
-    const decks = s.decks || {};
-
-    Object.keys(newDecks).forEach(name => {
-      decks[name] = newDecks[name];
-    });
-
-    s.decks = decks;
-    saveState();
-  }
-
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
   function getDeckStats(deckName, deckLength) {
     const s = loadState();
     if (!s.stats[deckName]) {
@@ -253,7 +237,6 @@
     return { ok: true };
   }
 
-<<<<<<< HEAD
   // Return deck metadata to callers.  Unknown decks return undefined.
   function getDeckMetadata() {
     return deckMetadata;
@@ -272,11 +255,7 @@
   }
 
   // Export the API on the global namespace
-=======
-  // Final export
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
   window.Integros = {
-<<<<<<< HEAD
     getDecks,
     replaceDecks,
     mergeDecks,
@@ -289,17 +268,5 @@
     renameDeck,
     getDeckMetadata,
     resetStats,
-=======
-    getDecks,
-    replaceDecks,
-    mergeDecks,
-    getDeckStats,
-    getStatsSnapshot,
-    recordAnswer,
-    getLastIndex,
-    chooseSpacedIndex,
-    deleteDeck,
-    renameDeck
->>>>>>> 28285425a279c81af62f33470b11321259133f4c
   };
 })();
