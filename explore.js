@@ -5,6 +5,18 @@
 // defined in app.js for storage and deck operations.
 
 (function () {
+  // Ensure Integros is loaded before initializing
+  function init() {
+    if (!window.Integros || !window.Integros.getDecks) {
+      console.error("Integros engine not loaded yet");
+      setTimeout(init, 50);
+      return;
+    }
+    
+    setupExplore();
+  }
+
+  function setupExplore() {
   const deckGridEl = document.getElementById("deck-grid");
   const newDeckBtn = document.getElementById("newDeckBtn");
   const jsonArea = document.getElementById("jsonArea");
@@ -271,4 +283,12 @@
 
   // Initialize the deck library
   renderDecks();
+  }
+
+  // Start initialization when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

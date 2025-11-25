@@ -62,11 +62,11 @@
       <p>Integros Flashcards · Train your knowledge. Master your craft.</p>
     </footer>
   </div>
-  <!-- Engine first -->
-  <script src="app.js"></script>
+  <!-- Engine first - defer to ensure DOM is ready -->
+  <script src="app.js" defer></script>
   <!-- Toast utility -->
-  <script src="toast.js"></script>
-  <!-- Explore logic -->
-  <script src="explore.js"></script>
+  <script src="toast.js" defer></script>
+  <!-- Explore logic - defer ensures it runs after app.js -->
+  <script src="explore.js" defer></script>
 </body>
 </html>
