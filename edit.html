@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Deck – Integros Flashcards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="brand-header">
+      <div class="brand-logo-wrap">
+        <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
+      </div>
+      <div class="brand-text">
+        <h1>Edit Deck</h1>
+        <p id="deckTitle">Loading...</p>
+      </div>
+      <nav class="brand-nav">
+        <a href="index.html">Home</a>
+        <a href="study.html">Study</a>
+        <a href="explore.html" aria-current="page">Explore</a>
+        <a href="about.html">About</a>
+      </nav>
+    </header>
+    <main class="page-main edit-main">
+      <section class="page-section">
+        <h2 id="editorHeading">Edit your cards</h2>
+        <p class="section-subtitle">Add, edit or remove cards for this deck. Empty rows will be ignored.</p>
+        <div id="cardEditor"></div>
+        <div class="editor-actions">
+          <button id="addCardBtn" class="btn-pill" aria-label="Add new card">+ Add card</button>
+          <button id="saveDeckBtn" class="btn-pill btn-good" aria-label="Save changes">Save changes</button>
+          <a id="cancelEditLink" href="explore.html" class="btn-pill btn-secondary" aria-label="Cancel editing">Cancel</a>
+        </div>
+      </section>
+    </main>
+    <footer class="app-footer">
+      <p>Integros Flashcards · Train your knowledge. Master your craft.</p>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+  <script src="toast.js"></script>
+  <script src="edit.js"></script>
+</body>
+</html>

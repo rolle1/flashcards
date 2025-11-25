@@ -1,4 +1,8 @@
 // Integros core: decks + localStorage + spaced helpers
+// This file contains the core logic for managing decks, spaced repetition
+// statistics, and persistence in localStorage.  It now includes deck
+// metadata and helpers to reset statistics.
+
 (function () {
   const STORAGE_KEY = "integros-flashcards-v1";
 
@@ -42,11 +46,39 @@
     ]
   };
 
+  // Metadata for curated decks.  Each entry provides a title, difficulty
+  // level, description and tags.  Explore.js uses this to build cards.
+  const deckMetadata = {
+    "AZ-900 Fundamentals": {
+      title: "AZ-900 Fundamentals",
+      level: "Beginner",
+      description: "Core Azure concepts, global infrastructure, pricing, and security basics.",
+      tags: ["Azure", "Cloud", "Exam"],
+    },
+    "Infra Core Concepts": {
+      title: "Infra Core Concepts",
+      level: "Intermediate",
+      description: "Servers, storage, networks, backups. The foundation of infra operations.",
+      tags: ["Infra", "Ops"],
+    },
+    "ITAM & CMDB": {
+      title: "ITAM & CMDB",
+      level: "Intermediate",
+      description: "Assets, lifecycle states, relationships, clean configuration data.",
+      tags: ["ITAM", "CMDB"],
+    },
+    "Example Deck": {
+      title: "Example Deck",
+      level: "Beginner",
+      description: "Miscellaneous example questions.",
+      tags: ["Example"],
+    },
+  };
+
   let stateCache = null;
 
   function loadState() {
     if (stateCache) return stateCache;
-
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) {
@@ -54,13 +86,12 @@
         return stateCache;
       }
       const parsed = JSON.parse(raw);
-
       if (!parsed.decks || typeof parsed.decks !== "object") {
         stateCache = { decks: defaultDecks, stats: {} };
       } else {
         stateCache = {
           decks: parsed.decks,
-          stats: parsed.stats || {}
+          stats: parsed.stats || {},
         };
       }
     } catch (e) {
@@ -89,6 +120,19 @@
     saveState();
   }
 
+<<<<<<< HEAD
+  // Merge decks into existing state (used by Explore + JSON import)
+  function mergeDecks(newDecks) {
+    const s = loadState();
+    const decks = s.decks || {};
+    Object.keys(newDecks).forEach((name) => {
+      decks[name] = newDecks[name];
+    });
+    s.decks = decks;
+    saveState();
+  }
+
+=======
   // Merge decks into existing state (used by Explore + JSON import)
   function mergeDecks(newDecks) {
     const s = loadState();
@@ -102,6 +146,7 @@
     saveState();
   }
 
+>>>>>>> 28285425a279c81af62f33470b11321259133f4c
   function getDeckStats(deckName, deckLength) {
     const s = loadState();
     if (!s.stats[deckName]) {
@@ -109,7 +154,7 @@
         correct: 0,
         total: 0,
         lastIndex: 0,
-        boxes: new Array(deckLength).fill(1)
+        boxes: new Array(deckLength).fill(1),
       };
     } else if (!Array.isArray(s.stats[deckName].boxes)) {
       s.stats[deckName].boxes = new Array(deckLength).fill(1);
@@ -133,7 +178,6 @@
       st.total += 1;
       if (correct) st.correct += 1;
       st.lastIndex = cardIndex;
-
       if (spacedMode) {
         const boxes = st.boxes;
         const current = boxes[cardIndex] || 1;
@@ -153,7 +197,6 @@
     const stats = getDeckStats(deckName, deckLength);
     const boxes = stats.boxes;
     const weightsForBox = [0, 4, 2, 1, 1];
-
     const bag = [];
     for (let i = 0; i < deckLength; i += 1) {
       const box = boxes[i] || 1;
@@ -188,7 +231,6 @@
   function renameDeck(oldName, newName) {
     const s = loadState();
     const trimmed = (newName || "").trim();
-
     if (!s.decks[oldName]) {
       return { ok: false, reason: "Deck not found." };
     }
@@ -201,21 +243,53 @@
     if (s.decks[trimmed]) {
       return { ok: false, reason: "A deck with that name already exists." };
     }
-
     s.decks[trimmed] = s.decks[oldName];
     delete s.decks[oldName];
-
     if (s.stats[oldName]) {
       s.stats[trimmed] = s.stats[oldName];
       delete s.stats[oldName];
     }
-
     saveState();
     return { ok: true };
   }
 
+<<<<<<< HEAD
+  // Return deck metadata to callers.  Unknown decks return undefined.
+  function getDeckMetadata() {
+    return deckMetadata;
+  }
+
+  // Reset spaced repetition statistics.  If a deck name is provided, only
+  // that deck's stats are cleared.  Otherwise, all stats are cleared.
+  function resetStats(deckName) {
+    const s = loadState();
+    if (!deckName) {
+      s.stats = {};
+    } else {
+      delete s.stats[deckName];
+    }
+    saveState();
+  }
+
+  // Export the API on the global namespace
+=======
   // Final export
+>>>>>>> 28285425a279c81af62f33470b11321259133f4c
   window.Integros = {
+<<<<<<< HEAD
+    getDecks,
+    replaceDecks,
+    mergeDecks,
+    getDeckStats,
+    getStatsSnapshot,
+    recordAnswer,
+    getLastIndex,
+    chooseSpacedIndex,
+    deleteDeck,
+    renameDeck,
+    getDeckMetadata,
+    resetStats,
+=======
     getDecks,
     replaceDecks,
     mergeDecks,
@@ -226,5 +300,6 @@
     chooseSpacedIndex,
     deleteDeck,
     renameDeck
+>>>>>>> 28285425a279c81af62f33470b11321259133f4c
   };
 })();
