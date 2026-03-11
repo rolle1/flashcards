@@ -140,8 +140,8 @@
     Object.keys(allDecks).forEach(function (deckName) {
       const m = meta[deckName] || {};
       const title = m.title || deckName;
-      const level = m.level || "Custom deck";
-      const desc = m.description || "Your personal deck.";
+      const level = m.level || (m.title ? m.level : "Custom deck");
+      const desc = m.description || (m.title ? m.description : "Your personal deck.");
       const tagsArr = m.tags || [];
       const card = createDeckCard(deckName, title, level, desc, tagsArr);
       deckGridEl.appendChild(card);
@@ -163,12 +163,11 @@
         setStatus("Name cannot be empty.", false);
         return;
       }
-      // Allow letters, numbers, spaces, hyphens, apostrophes, periods,
-      // colons, ampersands, and parentheses — 2–60 characters
-      const invalid = /[^a-zA-Z0-9 \-'.:&()]/;
-      if (trimmed.length < 2 || trimmed.length > 60 || invalid.test(trimmed)) {
+      // Allow only letters, numbers, spaces and hyphens, 2–50 characters
+      const invalid = /[^a-zA-Z0-9 \-]/;
+      if (trimmed.length < 2 || trimmed.length > 50 || invalid.test(trimmed)) {
         setStatus(
-          "Invalid deck name. Use 2–60 characters: letters, numbers, spaces, hyphens, apostrophes, periods, colons, & or ().",
+          "Invalid deck name. Use 2–50 characters: letters, numbers, spaces or hyphens.",
           false
         );
         return;
@@ -222,16 +221,16 @@
           if (!trimmedName) {
             throw new Error("Deck name cannot be empty.");
           }
-          const invalidName = /[^a-zA-Z0-9 \-'.:&()]/;
+          const invalidName = /[^a-zA-Z0-9 \-]/;
           if (
             trimmedName.length < 2 ||
-            trimmedName.length > 60 ||
+            trimmedName.length > 50 ||
             invalidName.test(trimmedName)
           ) {
             throw new Error(
               "Invalid deck name '" +
                 deckName +
-                "'. Names must be 2–60 characters (letters, numbers, spaces, hyphens, apostrophes, periods, colons, & or ())."
+                "'. Names must be 2–50 characters (letters, numbers, spaces or hyphens)."
             );
           }
           const arr = parsed[deckName];
@@ -284,6 +283,9 @@
 
   // Initialize the deck library
   renderDecks();
+
+  // Expose renderDecks so other scripts (e.g. ai-generator.js) can refresh the grid
+  window.renderDecks = renderDecks;
   }
 
   // Start initialization when DOM is ready

@@ -40,6 +40,57 @@
         </div>
         <div id="deck-grid" class="deck-grid"></div>
       </section>
+      <section class="page-section ai-generator">
+        <h2>✦ AI Deck Generator</h2>
+        <p class="section-subtitle">Describe a topic and get a ready-to-study deck in seconds.</p>
+        <div class="ai-gen-fields">
+          <div class="ai-gen-field">
+            <label class="field-label" for="aiTopic">Topic</label>
+            <input
+              id="aiTopic"
+              type="text"
+              class="ai-gen-input"
+              placeholder="e.g. Azure Virtual Networks, DNS records, Kubernetes pods"
+              autocomplete="off"
+            >
+          </div>
+          <div class="ai-gen-row">
+            <div class="ai-gen-field ai-gen-field--small">
+              <label class="field-label" for="aiCount">Cards</label>
+              <select id="aiCount" class="ai-gen-select">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <div class="ai-gen-field ai-gen-field--grow">
+              <label class="field-label" for="aiDeckName">Save as deck</label>
+              <input
+                id="aiDeckName"
+                type="text"
+                class="ai-gen-input"
+                placeholder="Deck name (auto-filled from topic)"
+                autocomplete="off"
+              >
+            </div>
+          </div>
+        </div>
+        <div class="ai-gen-actions">
+          <button id="aiGenerateBtn" class="btn-pill btn-ai" aria-label="Generate deck with AI">
+            <span id="aiGenerateBtnLabel">✦ Generate deck</span>
+          </button>
+        </div>
+        <div id="aiStatus" class="ai-status"></div>
+        <div id="aiPreview" class="ai-preview" style="display:none">
+          <div class="ai-preview-header">
+            <span id="aiPreviewCount"></span>
+            <button id="aiImportBtn" class="btn-pill btn-good">Import into library</button>
+          </div>
+          <div id="aiPreviewCards" class="ai-preview-cards"></div>
+        </div>
+      </section>
+
       <section class="page-section json-tools">
         <h2>JSON tools</h2>
         <p class="section-subtitle">Import or export decks as JSON.</p>
@@ -68,5 +119,7 @@
   <script src="toast.js" defer></script>
   <!-- Explore logic - defer ensures it runs after app.js -->
   <script src="explore.js" defer></script>
+  <!-- AI Deck Generator -->
+  <script src="ai-generator.js" defer></script>
 </body>
 </html>
