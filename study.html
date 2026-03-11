@@ -58,6 +58,14 @@
       fill: #8b5cf6;
     }
 
+    /* Card counter outside the card */
+    .card-counter {
+      text-align: center;
+      font-size: 13px;
+      color: #9ca3af;
+      margin: -4px 0 10px 0;
+    }
+
     /* Progress bar */
     .progress-wrap {
       display: flex;
@@ -132,9 +140,7 @@
             </label>
             <select id="modeSelect" aria-label="Select mode">
               <option value="normal">Normal</option>
-              <option value="spaced">Spaced</option>
               <option value="mc">Multiple choice</option>
-              <option value="type">Type answer</option>
             </select>
           </div>
           <div class="control-group">
@@ -172,9 +178,10 @@
           <div id="cardText" class="card-text">
             Loading...
           </div>
-          <div class="card-footer">
-            <span id="cardIndex">1</span> / <span id="cardTotal">1</span>
-          </div>
+        </div>
+
+        <div class="card-counter">
+          <span id="cardIndex">1</span> / <span id="cardTotal">1</span>
         </div>
 
         <div class="card-actions">
@@ -182,19 +189,11 @@
           <button id="flipBtn" class="btn-pill" aria-label="Flip card">Flip</button>
           <button id="nextBtn" class="btn-pill" aria-label="Next card">Next</button>
         </div>
-        <div class="card-actions spaced-actions">
-          <button id="rightBtn" class="btn-pill btn-good" aria-label="Mark answer correct">Right</button>
-          <button id="wrongBtn" class="btn-pill btn-bad" aria-label="Mark answer wrong">Wrong</button>
-        </div>
         <div id="mcRow" class="mc-row">
           <button class="btn-pill mc-option" data-index="0" aria-label="Option 1"></button>
           <button class="btn-pill mc-option" data-index="1" aria-label="Option 2"></button>
           <button class="btn-pill mc-option" data-index="2" aria-label="Option 3"></button>
           <button class="btn-pill mc-option" data-index="3" aria-label="Option 4"></button>
-        </div>
-        <div id="typeRow" class="type-row">
-          <input id="typeInput" type="text" placeholder="Type the answer">
-          <button id="typeCheckBtn" class="btn-pill">Check</button>
         </div>
       </section>
     </main>

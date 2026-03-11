@@ -17,20 +17,11 @@
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
   const flipBtn = document.getElementById("flipBtn");
-  const rightBtn = document.getElementById("rightBtn");
-  const wrongBtn = document.getElementById("wrongBtn");
 
   const mcRow = document.getElementById("mcRow");
   const mcButtons = Array.prototype.slice.call(
     document.querySelectorAll(".mc-option")
   );
-
-  const typeRow = document.getElementById("typeRow");
-  const typeInput = document.getElementById("typeInput");
-  const typeCheckBtn = document.getElementById("typeCheckBtn");
-
-  // Right / Wrong buttons container — only shown in normal and spaced modes
-  const spacedActionsEl = document.querySelector(".spaced-actions");
 
   // Reset button for clearing progress
   const resetBtn = document.getElementById("resetBtn");
@@ -67,24 +58,10 @@
     if (dy > 60) return;
 
     // Swipe right: previous
-    if (dx > 60) {
-      if (mode === "spaced") {
-        moveSpaced();
-      } else {
-        move(-1);
-      }
-      return;
-    }
+    if (dx > 60) { move(-1); return; }
 
     // Swipe left: next
-    if (dx < -60) {
-      if (mode === "spaced") {
-        moveSpaced();
-      } else {
-        move(1);
-      }
-      return;
-    }
+    if (dx < -60) { move(1); return; }
 
     // Tap: flip
     if (Math.abs(dx) < 10 && dy < 10) {
@@ -120,10 +97,7 @@
       if (lastDeck && decks[lastDeck]) {
         deckName = lastDeck;
       }
-      if (
-        lastMode &&
-        ["normal", "spaced", "mc", "type"].indexOf(lastMode) !== -1
-      ) {
+      if (lastMode && ["normal", "mc"].indexOf(lastMode) !== -1) {
         mode = lastMode;
       }
     } catch (err) {
@@ -241,36 +215,23 @@
 
   function setMode(newMode) {
     mode = newMode;
-    // Persist mode selection
     try {
       window.localStorage.setItem("integros-lastMode", mode);
     } catch (err) {
       // ignore
     }
-
     if (mode === "mc") {
       mcRow.style.display = "flex";
-      typeRow.style.display = "none";
-      if (spacedActionsEl) spacedActionsEl.style.display = "none";
       prepareMultipleChoiceOptions();
-    } else if (mode === "type") {
-      mcRow.style.display = "none";
-      typeRow.style.display = "flex";
-      if (spacedActionsEl) spacedActionsEl.style.display = "none";
-      typeInput.value = "";
     } else {
-      // normal and spaced modes both use Right / Wrong for self-grading
+      // normal
       mcRow.style.display = "none";
-      typeRow.style.display = "none";
-      if (spacedActionsEl) spacedActionsEl.style.display = "flex";
     }
   }
 
   function refreshModeUI() {
     if (mode === "mc") {
       prepareMultipleChoiceOptions();
-    } else if (mode === "type") {
-      typeInput.value = "";
     }
   }
 
@@ -288,24 +249,11 @@
     renderCard();
   }
 
-  function moveSpaced() {
-    if (!deck.length) return;
-    const len = deck.length;
-    index = Integros.chooseSpacedIndex(deckName, len);
-    showingBack = false;
-    renderCard();
-  }
-
   function record(correct) {
     if (!deck.length) return;
-    const spacedMode = mode === "spaced";
-    Integros.recordAnswer(deckName, deck.length, index, correct, spacedMode);
+    Integros.recordAnswer(deckName, fullDeck.length, index, correct, false);
     updateScoreDisplay();
-    if (spacedMode) {
-      moveSpaced();
-    } else {
-      move(1);
-    }
+    move(1);
   }
 
   function prepareMultipleChoiceOptions() {
@@ -356,45 +304,11 @@
     record(correct);
   }
 
-  function normalize(str) {
-    return String(str || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
-  }
-
-  function handleTypeCheck() {
-    if (!deck.length) return;
-    const expected = deck[index].back;
-    const given = typeInput.value;
-    if (!given.trim()) return;
-    const ok = normalize(expected) === normalize(given);
-    record(ok);
-  }
-
   // Click listeners
   cardEl.addEventListener("click", flipCard);
   flipBtn.addEventListener("click", flipCard);
-  prevBtn.addEventListener("click", function () {
-    if (mode === "spaced") {
-      moveSpaced();
-    } else {
-      move(-1);
-    }
-  });
-  nextBtn.addEventListener("click", function () {
-    if (mode === "spaced") {
-      moveSpaced();
-    } else {
-      move(1);
-    }
-  });
-  rightBtn.addEventListener("click", function () {
-    record(true);
-  });
-  wrongBtn.addEventListener("click", function () {
-    record(false);
-  });
+  prevBtn.addEventListener("click", function () { move(-1); });
+  nextBtn.addEventListener("click", function () { move(1); });
   deckSelect.addEventListener("change", function (e) {
     const decks = Integros.getDecks();
     deckName = e.target.value;
@@ -452,13 +366,6 @@
       handleMultipleChoiceClick(idx);
     });
   });
-  typeCheckBtn.addEventListener("click", handleTypeCheck);
-  typeInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleTypeCheck();
-    }
-  });
 
   // Keyboard shortcuts
   document.addEventListener("keydown", function (e) {
@@ -468,15 +375,9 @@
       e.preventDefault();
       flipCard();
     } else if (e.key === "ArrowRight") {
-      if (mode === "spaced") moveSpaced();
-      else move(1);
+      move(1);
     } else if (e.key === "ArrowLeft") {
-      if (mode === "spaced") moveSpaced();
-      else move(-1);
-    } else if (e.key === "1") {
-      record(true);
-    } else if (e.key === "2") {
-      record(false);
+      move(-1);
     }
   });
 
@@ -505,15 +406,12 @@
 
   // Initialize
   initDeckSelect();
-  // Ensure the persisted mode is valid
-  if (["normal", "spaced", "mc", "type"].indexOf(mode) === -1) {
+  if (["normal", "mc"].indexOf(mode) === -1) {
     mode = "normal";
   }
-  // Sync the mode <select> to the stored mode
   if (modeSelect) {
     modeSelect.value = mode;
   }
-  // Apply mode settings
   setMode(mode);
   renderCard();
 })();
