@@ -6,74 +6,13 @@
 (function () {
   const STORAGE_KEY = "integros-flashcards-v1";
 
-  // Default decks used when localStorage is empty.
-  const defaultDecks = {
-    "AZ-900 Fundamentals": [
-      { front: "What is Azure?", back: "Microsoft's cloud platform." },
-      { front: "What does IaaS stand for?", back: "Infrastructure as a Service." },
-      { front: "What does PaaS stand for?", back: "Platform as a Service." },
-      { front: "What does SaaS stand for?", back: "Software as a Service." }
-    ],
-    "Infra Core Concepts": [
-      {
-        front: "What are the three core building blocks of infrastructure?",
-        back: "Compute, storage, and networking."
-      },
-      {
-        front: "Why do we take backups?",
-        back: "To restore data after failure or corruption."
-      },
-      {
-        front: "What does 'on-premises' mean?",
-        back: "Infrastructure hosted in your own facilities instead of a public cloud."
-      }
-    ],
-    "ITAM & CMDB": [
-      { front: "What does ITAM stand for?", back: "IT Asset Management." },
-      {
-        front: "Goal of hardware lifecycle?",
-        back: "Control cost, risk, and value across the hardware lifecycle."
-      },
-      {
-        front: "Example of a hardware asset",
-        back: "Laptop, desktop, server, switch, mobile device."
-      }
-    ],
-    "Example Deck": [
-      { front: "What is the capital of France?", back: "Paris" },
-      { front: "2 + 2 = ?", back: "4" },
-      { front: "HTTP stands for?", back: "HyperText Transfer Protocol" }
-    ]
-  };
+  // No default decks — new devices start with a clean library.
+  // Import decks via the Explore page JSON tools or AI generator.
+  const defaultDecks = {};
 
-  // Metadata for curated decks.  Each entry provides a title, difficulty
-  // level, description and tags.  Explore.js uses this to build cards.
-  const deckMetadata = {
-    "AZ-900 Fundamentals": {
-      title: "AZ-900 Fundamentals",
-      level: "Beginner",
-      description: "Core Azure concepts, global infrastructure, pricing, and security basics.",
-      tags: ["Azure", "Cloud", "Exam"],
-    },
-    "Infra Core Concepts": {
-      title: "Infra Core Concepts",
-      level: "Intermediate",
-      description: "Servers, storage, networks, backups. The foundation of infra operations.",
-      tags: ["Infra", "Ops"],
-    },
-    "ITAM & CMDB": {
-      title: "ITAM & CMDB",
-      level: "Intermediate",
-      description: "Assets, lifecycle states, relationships, clean configuration data.",
-      tags: ["ITAM", "CMDB"],
-    },
-    "Example Deck": {
-      title: "Example Deck",
-      level: "Beginner",
-      description: "Miscellaneous example questions.",
-      tags: ["Example"],
-    },
-  };
+  // Metadata for curated decks — empty now that default decks have been removed.
+  // Custom decks fall back to generic display values in explore.js.
+  const deckMetadata = {};
 
   let stateCache = null;
 
