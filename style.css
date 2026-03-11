@@ -282,45 +282,6 @@ body {
   box-shadow: 0 16px 35px rgba(15, 23, 42, 0.9);
   margin-bottom: 10px;
   cursor: pointer;
-  position: relative;
-  flex-direction: column;
-}
-
-.card.is-flagged {
-  border-color: rgba(251, 191, 36, 0.7);
-  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.9), 0 0 18px rgba(251, 191, 36, 0.15);
-}
-
-/* Flag button — sits in the top-right of the card */
-.flag-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: rgba(148, 163, 184, 0.5);
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  transition: color 0.15s ease, transform 0.1s ease;
-  flex-shrink: 0;
-}
-
-.flag-btn:hover {
-  color: #fbbf24;
-  transform: scale(1.15);
-}
-
-.flag-btn.active {
-  color: #fbbf24;
-  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.6));
-}
-
-/* Flagged-only toggle — amber when active */
-#flaggedOnlyBtn.active {
-  background: rgba(251, 191, 36, 0.1);
-  border-color: rgba(251, 191, 36, 0.7);
-  color: #fbbf24;
 }
 
 .card-face p {
@@ -574,6 +535,88 @@ body {
 
 .about-card h2:first-of-type {
   margin-top: 0;
+}
+
+/* Edit page */
+
+.edit-main .page-section {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+#cardEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.card-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(75, 85, 99, 0.6);
+  border-radius: 12px;
+  padding: 8px 10px;
+  transition: border-color 0.15s ease;
+}
+
+.card-edit-row:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.card-edit-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.5);
+  color: var(--text-main);
+  font-size: 13px;
+  padding: 4px 2px;
+  outline: none;
+  min-width: 0;
+}
+
+.card-edit-row input:focus {
+  border-bottom-color: var(--accent-soft);
+}
+
+.card-edit-row input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Up / Down reorder buttons */
+.card-reorder {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.btn-reorder {
+  background: transparent;
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1;
+  padding: 2px 5px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn-reorder:hover {
+  color: var(--accent-soft);
+  border-color: var(--accent-soft);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.editor-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
 }
 
 /* Responsive */

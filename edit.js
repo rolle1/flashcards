@@ -37,16 +37,50 @@
   function createRow(frontVal, backVal) {
     const row = document.createElement("div");
     row.className = "card-edit-row";
+
+    // Drag handle / reorder buttons
+    const reorderWrap = document.createElement("div");
+    reorderWrap.className = "card-reorder";
+
+    const upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.className = "btn-reorder";
+    upBtn.setAttribute("aria-label", "Move card up");
+    upBtn.innerHTML = "&#8593;";
+    upBtn.addEventListener("click", function () {
+      const prev = row.previousElementSibling;
+      if (prev && prev.classList.contains("card-edit-row")) {
+        editor.insertBefore(row, prev);
+      }
+    });
+
+    const downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.className = "btn-reorder";
+    downBtn.setAttribute("aria-label", "Move card down");
+    downBtn.innerHTML = "&#8595;";
+    downBtn.addEventListener("click", function () {
+      const next = row.nextElementSibling;
+      if (next && next.classList.contains("card-edit-row")) {
+        editor.insertBefore(next, row);
+      }
+    });
+
+    reorderWrap.appendChild(upBtn);
+    reorderWrap.appendChild(downBtn);
+
     const frontInput = document.createElement("input");
     frontInput.type = "text";
     frontInput.placeholder = "Front";
     frontInput.value = frontVal || "";
     frontInput.className = "card-edit-front";
+
     const backInput = document.createElement("input");
     backInput.type = "text";
     backInput.placeholder = "Back";
     backInput.value = backVal || "";
     backInput.className = "card-edit-back";
+
     const delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "btn-pill btn-bad";
@@ -55,6 +89,8 @@
     delBtn.addEventListener("click", function () {
       editor.removeChild(row);
     });
+
+    row.appendChild(reorderWrap);
     row.appendChild(frontInput);
     row.appendChild(backInput);
     row.appendChild(delBtn);
