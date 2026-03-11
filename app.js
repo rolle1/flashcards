@@ -232,6 +232,11 @@
     saveState();
   }
 
+  // Allow external modules (e.g. drive-sync.js) to invalidate the state cache
+  function _resetCache() {
+    stateCache = null;
+  }
+
   // Export the API on the global namespace
   window.Integros = {
     getDecks,
@@ -250,5 +255,6 @@
     unflagCard,
     isCardFlagged,
     getFlaggedIndices,
+    _resetCache,
   };
 })();

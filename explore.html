@@ -40,6 +40,15 @@
         </div>
         <div id="deck-grid" class="deck-grid"></div>
       </section>
+      <section class="page-section drive-sync-section">
+        <h2>☁ Google Drive Sync</h2>
+        <p class="section-subtitle">Sign in to sync your decks across all your devices.</p>
+        <div class="drive-sync-actions">
+          <button id="driveSyncBtn" class="btn-pill btn-drive">Sign in &amp; sync</button>
+        </div>
+        <p id="driveSyncStatus" class="drive-sync-status"></p>
+      </section>
+
       <section class="page-section ai-generator">
         <h2>✦ AI Deck Generator</h2>
         <p class="section-subtitle">Describe a topic and get a ready-to-study deck in seconds.</p>
@@ -119,6 +128,10 @@
   <script src="toast.js" defer></script>
   <!-- Explore logic - defer ensures it runs after app.js -->
   <script src="explore.js" defer></script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Drive Sync -->
+  <script src="drive-sync.js" defer></script>
   <!-- AI Deck Generator -->
   <script src="ai-generator.js" defer></script>
 </body>
