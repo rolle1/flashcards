@@ -9,8 +9,15 @@
   <style>
     .card-header {
       display: flex;
-      justify-content: flex-start;
-      padding-left: 12px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px 0 4px;
+      width: 100%;
+      position: absolute;
+      top: 10px;
+      left: 0;
+      box-sizing: border-box;
+      padding: 0 14px;
     }
     .brand-text {
       text-align: center;
@@ -99,11 +106,20 @@
             <label>&nbsp;</label>
             <button id="resetBtn" class="btn-pill" aria-label="Reset progress">Reset progress</button>
           </div>
+          <div class="control-group">
+            <label>&nbsp;</label>
+            <button id="flaggedOnlyBtn" class="btn-pill" aria-label="Show flagged cards only" aria-pressed="false">⚑ Flagged only</button>
+          </div>
         </div>
 
         <div id="card" class="card">
           <div class="card-header">
             <span id="cardLabel" class="card-label">Question</span>
+            <button id="flagBtn" class="flag-btn" aria-label="Flag this card" title="Flag for review">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/>
+              </svg>
+            </button>
           </div>
           <div id="cardText" class="card-text">
             Loading...

@@ -242,6 +242,45 @@
     return deckMetadata;
   }
 
+  // --- Card flagging ---------------------------------------------------------
+  // Flags are stored as an array of card indices inside the deck's stats
+  // object: stats[deckName].flagged = [0, 3, 7].  They survive resets only
+  // when resetStats() is called without touching the flagged array — flags
+  // represent "I'm not confident" rather than spaced-rep progress, so they
+  // are intentionally kept across progress resets unless explicitly cleared.
+
+  function _getFlaggedSet(deckName, deckLength) {
+    const st = getDeckStats(deckName, deckLength);
+    if (!Array.isArray(st.flagged)) st.flagged = [];
+    return st.flagged;
+  }
+
+  function flagCard(deckName, deckLength, cardIndex) {
+    const s = loadState();
+    const st = getDeckStats(deckName, deckLength);
+    if (!Array.isArray(st.flagged)) st.flagged = [];
+    if (!st.flagged.includes(cardIndex)) st.flagged.push(cardIndex);
+    saveState();
+  }
+
+  function unflagCard(deckName, deckLength, cardIndex) {
+    const st = getDeckStats(deckName, deckLength);
+    if (!Array.isArray(st.flagged)) { st.flagged = []; saveState(); return; }
+    st.flagged = st.flagged.filter(function (i) { return i !== cardIndex; });
+    saveState();
+  }
+
+  function isCardFlagged(deckName, deckLength, cardIndex) {
+    const st = getDeckStats(deckName, deckLength);
+    if (!Array.isArray(st.flagged)) return false;
+    return st.flagged.includes(cardIndex);
+  }
+
+  // Returns an array of card indices that are flagged for the given deck.
+  function getFlaggedIndices(deckName, deckLength) {
+    return _getFlaggedSet(deckName, deckLength).slice();
+  }
+
   // Reset spaced repetition statistics.  If a deck name is provided, only
   // that deck's stats are cleared.  Otherwise, all stats are cleared.
   function resetStats(deckName) {
@@ -268,5 +307,9 @@
     renameDeck,
     getDeckMetadata,
     resetStats,
+    flagCard,
+    unflagCard,
+    isCardFlagged,
+    getFlaggedIndices,
   };
 })();

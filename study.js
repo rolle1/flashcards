@@ -35,12 +35,18 @@
   // Reset button for clearing progress
   const resetBtn = document.getElementById("resetBtn");
 
+  // Flag button (on the card) and flagged-only filter toggle
+  const flagBtn = document.getElementById("flagBtn");
+  const flaggedOnlyBtn = document.getElementById("flaggedOnlyBtn");
+
   let deckName = "";
-  let deck = [];
+  let deck = [];       // the active card list (may be filtered to flagged only)
+  let fullDeck = [];   // always the complete deck from storage
   let index = 0;
   let showingBack = false;
   let mode = "normal";
   let mcCorrectOptionIndex = null;
+  let flaggedOnly = false;  // whether we are filtering to flagged cards only
 
   // Swipe tracking
   let touchStartX = 0;
@@ -144,11 +150,30 @@
     }
 
     deckSelect.value = deckName;
-    deck = decks[deckName] || [];
+    fullDeck = decks[deckName] || [];
+    applyDeckFilter();
 
-    const last = Integros.getLastIndex(deckName, deck.length);
-    index = last;
+    const last = Integros.getLastIndex(deckName, fullDeck.length);
+    index = last < deck.length ? last : 0;
     updateScoreDisplay();
+  }
+
+  // Build `deck` from `fullDeck` based on the flaggedOnly toggle.
+  // When flaggedOnly is on and no cards are flagged, keeps full deck so
+  // the user isn't stranded on a blank card.
+  function applyDeckFilter() {
+    if (!flaggedOnly) {
+      deck = fullDeck;
+      return;
+    }
+    const flaggedIndices = Integros.getFlaggedIndices(deckName, fullDeck.length);
+    const filtered = fullDeck.filter(function (_, i) {
+      return flaggedIndices.includes(i);
+    });
+    deck = filtered.length ? filtered : fullDeck;
+    if (!filtered.length && flaggedOnlyBtn) {
+      showToast && showToast("No flagged cards — showing full deck.", false);
+    }
   }
 
   function updateScoreDisplay() {
@@ -157,15 +182,14 @@
   }
 
   function renderCard() {
-    // We no longer display the deck name on the card itself:
-    // cardDeckNameEl.textContent = deckName;
-
     if (!deck.length) {
       cardText.textContent =
         "No cards in this deck.\nGo to Explore and load some.";
       cardLabel.textContent = "Empty";
       cardIndexEl.textContent = "0";
       cardTotalEl.textContent = "0";
+      if (flagBtn) { flagBtn.classList.remove("active"); }
+      if (cardEl) { cardEl.classList.remove("is-flagged"); }
       return;
     }
 
@@ -174,6 +198,13 @@
     cardLabel.textContent = showingBack ? "Answer" : "Question";
     cardIndexEl.textContent = String(index + 1);
     cardTotalEl.textContent = String(deck.length);
+
+    // Resolve the true index in fullDeck for flag state (filter may shift indices)
+    const trueIndex = fullDeck.indexOf(current);
+    const flagged = trueIndex !== -1 && Integros.isCardFlagged(deckName, fullDeck.length, trueIndex);
+    if (flagBtn) flagBtn.classList.toggle("active", flagged);
+    if (cardEl) cardEl.classList.toggle("is-flagged", flagged);
+
     updateScoreDisplay();
     refreshModeUI();
   }
@@ -337,8 +368,10 @@
   deckSelect.addEventListener("change", function (e) {
     const decks = Integros.getDecks();
     deckName = e.target.value;
-    deck = decks[deckName] || [];
-    index = Integros.getLastIndex(deckName, deck.length);
+    fullDeck = decks[deckName] || [];
+    applyDeckFilter();
+    index = Integros.getLastIndex(deckName, fullDeck.length);
+    if (index >= deck.length) index = 0;
     showingBack = false;
     renderCard();
     // Persist deck
@@ -348,6 +381,37 @@
       // ignore
     }
   });
+
+  // Flag button — toggle flag on the current card
+  if (flagBtn) {
+    flagBtn.addEventListener("click", function (e) {
+      e.stopPropagation(); // don't flip the card
+      if (!deck.length) return;
+      const current = deck[index];
+      const trueIndex = fullDeck.indexOf(current);
+      if (trueIndex === -1) return;
+      const alreadyFlagged = Integros.isCardFlagged(deckName, fullDeck.length, trueIndex);
+      if (alreadyFlagged) {
+        Integros.unflagCard(deckName, fullDeck.length, trueIndex);
+      } else {
+        Integros.flagCard(deckName, fullDeck.length, trueIndex);
+      }
+      renderCard();
+    });
+  }
+
+  // Flagged-only toggle
+  if (flaggedOnlyBtn) {
+    flaggedOnlyBtn.addEventListener("click", function () {
+      flaggedOnly = !flaggedOnly;
+      flaggedOnlyBtn.classList.toggle("active", flaggedOnly);
+      flaggedOnlyBtn.setAttribute("aria-pressed", String(flaggedOnly));
+      applyDeckFilter();
+      index = 0;
+      showingBack = false;
+      renderCard();
+    });
+  }
   modeSelect.addEventListener("change", function (e) {
     setMode(e.target.value);
     renderCard();
@@ -423,4 +487,3 @@
   setMode(mode);
   renderCard();
 })();
-
