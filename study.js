@@ -29,6 +29,9 @@
   const typeInput = document.getElementById("typeInput");
   const typeCheckBtn = document.getElementById("typeCheckBtn");
 
+  // Right / Wrong buttons container — only shown in normal and spaced modes
+  const spacedActionsEl = document.querySelector(".spaced-actions");
+
   // Reset button for clearing progress
   const resetBtn = document.getElementById("resetBtn");
 
@@ -187,14 +190,18 @@
     if (mode === "mc") {
       mcRow.style.display = "flex";
       typeRow.style.display = "none";
+      if (spacedActionsEl) spacedActionsEl.style.display = "none";
       prepareMultipleChoiceOptions();
     } else if (mode === "type") {
       mcRow.style.display = "none";
       typeRow.style.display = "flex";
+      if (spacedActionsEl) spacedActionsEl.style.display = "none";
       typeInput.value = "";
     } else {
+      // normal and spaced modes both use Right / Wrong for self-grading
       mcRow.style.display = "none";
       typeRow.style.display = "none";
+      if (spacedActionsEl) spacedActionsEl.style.display = "flex";
     }
   }
 
