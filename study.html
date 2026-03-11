@@ -57,6 +57,45 @@
       height: 16px;
       fill: #8b5cf6;
     }
+
+    /* Progress bar */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-bar {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: rgba(139, 92, 246, 0.5);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    .progress-correct {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: rgba(74, 222, 128, 0.75);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    .progress-label {
+      font-size: 12px;
+      color: #9ca3af;
+      white-space: nowrap;
+      min-width: 40px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -110,6 +149,15 @@
             <label>&nbsp;</label>
             <button id="flaggedOnlyBtn" class="btn-pill" aria-label="Show flagged cards only" aria-pressed="false">⚑ Flagged only</button>
           </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-wrap" aria-label="Deck progress">
+          <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+            <div id="progressCorrect" class="progress-correct"></div>
+          </div>
+          <span id="progressLabel" class="progress-label">0 / 0</span>
         </div>
 
         <div id="card" class="card">

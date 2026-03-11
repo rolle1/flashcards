@@ -39,6 +39,11 @@
   const flagBtn = document.getElementById("flagBtn");
   const flaggedOnlyBtn = document.getElementById("flaggedOnlyBtn");
 
+  // Progress bar elements
+  const progressBar = document.getElementById("progressBar");
+  const progressCorrect = document.getElementById("progressCorrect");
+  const progressLabel = document.getElementById("progressLabel");
+
   let deckName = "";
   let deck = [];       // the active card list (may be filtered to flagged only)
   let fullDeck = [];   // always the complete deck from storage
@@ -177,8 +182,31 @@
   }
 
   function updateScoreDisplay() {
-    const stats = Integros.getStatsSnapshot(deckName, deck.length);
+    const stats = Integros.getStatsSnapshot(deckName, fullDeck.length);
     scoreText.textContent = stats.correct + " right / " + stats.total + " total";
+  }
+
+  function updateProgressBar() {
+    if (!progressBar || !progressCorrect || !progressLabel) return;
+    const total = deck.length;
+    if (!total) {
+      progressBar.style.width = "0%";
+      progressCorrect.style.width = "0%";
+      progressLabel.textContent = "0 / 0";
+      return;
+    }
+    // Position fill — how far through the deck we are
+    const positionPct = ((index + 1) / total) * 100;
+    progressBar.style.width = positionPct + "%";
+
+    // Correct fill — proportion of total answered that were correct
+    const stats = Integros.getStatsSnapshot(deckName, fullDeck.length);
+    const correctPct = stats.total > 0
+      ? Math.min((stats.correct / total) * 100, positionPct)
+      : 0;
+    progressCorrect.style.width = correctPct + "%";
+
+    progressLabel.textContent = (index + 1) + " / " + total;
   }
 
   function renderCard() {
@@ -190,6 +218,7 @@
       cardTotalEl.textContent = "0";
       if (flagBtn) { flagBtn.classList.remove("active"); }
       if (cardEl) { cardEl.classList.remove("is-flagged"); }
+      updateProgressBar();
       return;
     }
 
@@ -206,6 +235,7 @@
     if (cardEl) cardEl.classList.toggle("is-flagged", flagged);
 
     updateScoreDisplay();
+    updateProgressBar();
     refreshModeUI();
   }
 
