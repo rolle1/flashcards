@@ -196,19 +196,16 @@
     return { decks: mergedDecks, stats: mergedStats };
   }
 
-  // Write merged state back to localStorage and invalidate Integros cache
+  // Write merged state back to localStorage and invalidate the Integros
+  // in-memory cache so the next getDecks() call reads fresh from storage.
+  // No page reload needed — _resetCache() + renderDecks() handles everything.
   function applyToLocal(data) {
     try {
       window.localStorage.setItem("integros-flashcards-v1", JSON.stringify(data));
-      // Force Integros to reload from localStorage on next call
-      if (window.Integros && window.Integros._resetCache) {
-        window.Integros._resetCache();
-      } else {
-        // Fallback: patch stateCache if accessible (it's in closure so we reload)
-        window.location.reload();
-      }
+      window.Integros._resetCache();
     } catch (e) {
       console.error("Could not write to localStorage:", e);
+      throw e; // surface to runSync error handler
     }
   }
 
