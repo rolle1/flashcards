@@ -16,9 +16,18 @@
   let syncBtn      = null;
   let syncStatus   = null;
 
+  let gisRetries = 0;
+
   // Wait for GIS + Integros to be ready
   function init() {
     if (!window.google || !window.google.accounts || !window.Integros) {
+      gisRetries++;
+      if (gisRetries > 100) {
+        // 10 seconds passed — GIS likely blocked or failed to load
+        syncStatus = document.getElementById("driveSyncStatus");
+        setStatus("Google services failed to load. Check your connection or ad blocker.", "error");
+        return;
+      }
       setTimeout(init, 100);
       return;
     }
@@ -43,18 +52,31 @@
   }
 
   function onSyncClick() {
+    // Guard: GIS not loaded yet
+    if (!tokenClient) {
+      setStatus("Still loading Google services — try again in a moment.", "error");
+      return;
+    }
     if (accessToken) {
-      // Already signed in — sync immediately
       runSync();
     } else {
-      // Trigger Google sign-in popup
-      tokenClient.requestAccessToken({ prompt: "consent" });
+      try {
+        setStatus("Opening Google sign-in…", "info");
+        tokenClient.requestAccessToken({ prompt: "consent" });
+      } catch (err) {
+        console.error("OAuth error:", err);
+        setStatus("Could not open sign-in popup. Check your browser isn't blocking popups for this site.", "error");
+      }
     }
   }
 
   function onTokenResponse(resp) {
     if (resp.error) {
-      setStatus("Sign-in failed: " + resp.error, "error");
+      const msg = resp.error === "popup_closed_by_user"
+        ? "Sign-in cancelled."
+        : "Sign-in failed: " + resp.error;
+      setStatus(msg, "error");
+      updateBtn("Sign in & sync");
       return;
     }
     accessToken = resp.access_token;
