@@ -163,11 +163,11 @@
         setStatus("Name cannot be empty.", false);
         return;
       }
-      // Allow only letters, numbers, spaces and hyphens, 2–50 characters
-      const invalid = /[^a-zA-Z0-9 \-]/;
-      if (trimmed.length < 2 || trimmed.length > 50 || invalid.test(trimmed)) {
+      // Allow letters, numbers, spaces, hyphens, colons, ampersands, apostrophes, parens, periods
+      const invalid = /[^a-zA-Z0-9 \-:&'().]/;
+      if (trimmed.length < 2 || trimmed.length > 60 || invalid.test(trimmed)) {
         setStatus(
-          "Invalid deck name. Use 2–50 characters: letters, numbers, spaces or hyphens.",
+          "Invalid deck name. Use 2–60 characters: letters, numbers, spaces, hyphens, colons or &.",
           false
         );
         return;
@@ -221,16 +221,16 @@
           if (!trimmedName) {
             throw new Error("Deck name cannot be empty.");
           }
-          const invalidName = /[^a-zA-Z0-9 \-]/;
+          const invalidName = /[^a-zA-Z0-9 \-:&'().]/;
           if (
             trimmedName.length < 2 ||
-            trimmedName.length > 50 ||
+            trimmedName.length > 60 ||
             invalidName.test(trimmedName)
           ) {
             throw new Error(
               "Invalid deck name '" +
                 deckName +
-                "'. Names must be 2–50 characters (letters, numbers, spaces or hyphens)."
+                "'. Names must be 2–60 characters (letters, numbers, spaces, hyphens, colons or &)."
             );
           }
           const arr = parsed[deckName];
