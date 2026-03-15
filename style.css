@@ -1065,3 +1065,19 @@ body {
   border-color: rgba(248,113,113,0.4);
   background: rgba(248,113,113,0.08);
 }
+
+/* ─── AI key input row ───────────────────────────────────────────────────── */
+.ai-apikey-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-apikey-input {
+  font-family: 'SF Mono', ui-monospace, 'Cascadia Code', monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}

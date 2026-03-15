@@ -17,6 +17,18 @@
     if (typeof showToast === "function") showToast(msg, !!ok);
   }
 
+  const API_KEY_STORAGE = "integros-anthropic-key";
+
+  function getApiKey() {
+    try { return window.localStorage.getItem(API_KEY_STORAGE) || ""; }
+    catch (_) { return ""; }
+  }
+
+  function saveApiKey(key) {
+    try { window.localStorage.setItem(API_KEY_STORAGE, key.trim()); }
+    catch (_) {}
+  }
+
   function notifyDecksUpdated() {
     if (typeof window.renderDecks === "function") {
       window.renderDecks();
@@ -71,9 +83,17 @@
     const userPrompt =
       "Topic: " + topic + "\nNumber of cards: " + count;
 
+    const apiKey = getApiKey();
+    if (!apiKey) throw new Error("No API key set — add it in the field above.");
+
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 8000,
@@ -140,6 +160,8 @@
 
   function setupGenerator() {
     // DOM references
+    const apiKeyInput    = document.getElementById("aiApiKey");
+    const apiKeySaveBtn  = document.getElementById("aiApiKeySave");
     const topicInput     = document.getElementById("aiTopic");
     const countSelect    = document.getElementById("aiCount");
     const cardTypeSelect = document.getElementById("aiCardType");
@@ -159,6 +181,34 @@
     // In-memory state
     let pendingCards    = [];
     let pendingDeckName = "";
+
+    // ── API key ────────────────────────────────────────────────────────────
+    if (apiKeyInput) {
+      apiKeyInput.value = getApiKey();
+      // Mask key so it isn't visible in plain text after load
+      if (apiKeyInput.value) apiKeyInput.type = "password";
+    }
+    if (apiKeySaveBtn && apiKeyInput) {
+      apiKeySaveBtn.addEventListener("click", function () {
+        const k = apiKeyInput.value.trim();
+        if (!k) { setStatus("Paste your Anthropic API key first.", "error"); return; }
+        saveApiKey(k);
+        apiKeyInput.type = "password";
+        setStatus("API key saved.", "ok");
+        setTimeout(clearStatus, 2000);
+      });
+      // Also save on Enter
+      apiKeyInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") apiKeySaveBtn.click();
+      });
+      // Show key while actively typing
+      apiKeyInput.addEventListener("focus", function () {
+        apiKeyInput.type = "text";
+      });
+      apiKeyInput.addEventListener("blur", function () {
+        if (apiKeyInput.value) apiKeyInput.type = "password";
+      });
+    }
 
     // ── Auto-fill deck name ────────────────────────────────────────────────
     if (topicInput && deckNameInput) {

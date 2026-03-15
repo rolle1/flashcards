@@ -54,6 +54,24 @@
         <h2>✦ AI Deck Generator</h2>
         <p class="section-subtitle">Describe a topic and get a ready-to-study deck in seconds.</p>
 
+        <!-- API key (stored in localStorage, never leaves the browser) -->
+        <div class="ai-apikey-row">
+          <div class="ai-gen-field" style="flex:1">
+            <label class="field-label" for="aiApiKey">Anthropic API key</label>
+            <input
+              id="aiApiKey"
+              type="text"
+              class="ai-gen-input ai-apikey-input"
+              placeholder="sk-ant-api03-…  (stored locally, never sent anywhere else)"
+              autocomplete="off"
+              spellcheck="false"
+            >
+          </div>
+          <div class="ai-gen-field" style="padding-top:18px">
+            <button id="aiApiKeySave" class="btn-pill" aria-label="Save API key">Save key</button>
+          </div>
+        </div>
+
         <div class="ai-gen-fields">
           <!-- Row 1: Topic -->
           <div class="ai-gen-field">
