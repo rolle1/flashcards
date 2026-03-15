@@ -40,6 +40,7 @@
         </div>
         <div id="deck-grid" class="deck-grid"></div>
       </section>
+
       <section class="page-section drive-sync-section">
         <h2>☁ Google Drive Sync</h2>
         <p class="section-subtitle">Sign in to sync your decks across all your devices.</p>
@@ -52,7 +53,9 @@
       <section class="page-section ai-generator">
         <h2>✦ AI Deck Generator</h2>
         <p class="section-subtitle">Describe a topic and get a ready-to-study deck in seconds.</p>
+
         <div class="ai-gen-fields">
+          <!-- Row 1: Topic -->
           <div class="ai-gen-field">
             <label class="field-label" for="aiTopic">Topic</label>
             <input
@@ -63,6 +66,8 @@
               autocomplete="off"
             >
           </div>
+
+          <!-- Row 2: Count + Deck name -->
           <div class="ai-gen-row">
             <div class="ai-gen-field ai-gen-field--small">
               <label class="field-label" for="aiCount">Cards</label>
@@ -84,18 +89,67 @@
               >
             </div>
           </div>
+
+          <!-- Row 3: Card style + Language -->
+          <div class="ai-gen-row">
+            <div class="ai-gen-field ai-gen-field--small">
+              <label class="field-label" for="aiCardType">Card style</label>
+              <select id="aiCardType" class="ai-gen-select">
+                <option value="qa" selected>Q &amp; A</option>
+                <option value="fill">Fill-in-blank</option>
+                <option value="tf">True / False</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </div>
+            <div class="ai-gen-field ai-gen-field--small">
+              <label class="field-label" for="aiLanguage">Language</label>
+              <select id="aiLanguage" class="ai-gen-select">
+                <option value="English" selected>English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Italian">Italian</option>
+                <option value="Dutch">Dutch</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Mandarin Chinese">Mandarin</option>
+                <option value="Korean">Korean</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Hindi">Hindi</option>
+              </select>
+            </div>
+          </div>
         </div>
+
+        <!-- Actions row: Generate + Regenerate (hidden until first run) -->
         <div class="ai-gen-actions">
           <button id="aiGenerateBtn" class="btn-pill btn-ai" aria-label="Generate deck with AI">
             <span id="aiGenerateBtnLabel">✦ Generate deck</span>
           </button>
+          <button
+            id="aiRegenBtn"
+            class="btn-pill"
+            aria-label="Regenerate deck with same settings"
+            style="display:none"
+          >↻ Regenerate</button>
         </div>
+
+        <!-- Status line -->
         <div id="aiStatus" class="ai-status"></div>
+
+        <!-- Skeleton loader (shown while waiting for API) -->
+        <div id="aiSkeleton" class="ai-skeleton" style="display:none" aria-live="polite" aria-label="Generating cards…"></div>
+
+        <!-- Preview panel -->
         <div id="aiPreview" class="ai-preview" style="display:none">
           <div class="ai-preview-header">
             <span id="aiPreviewCount"></span>
-            <button id="aiImportBtn" class="btn-pill btn-good">Import into library</button>
+            <div class="ai-preview-header-actions">
+              <button id="aiExportBtn" class="btn-pill btn-secondary" title="Download as JSON file">⬇ Download JSON</button>
+              <button id="aiImportBtn" class="btn-pill btn-good">Import into library</button>
+            </div>
           </div>
+          <p class="ai-preview-hint">Click any cell to edit · ↻ to regenerate a card · ✕ to remove it</p>
           <div id="aiPreviewCards" class="ai-preview-cards"></div>
         </div>
       </section>
@@ -118,10 +172,12 @@
         <p id="jsonStatus" class="json-status"></p>
       </section>
     </main>
+
     <footer class="app-footer">
       <p>Integros Flashcards · Train your knowledge. Master your craft.</p>
     </footer>
   </div>
+
   <!-- Engine first - defer to ensure DOM is ready -->
   <script src="app.js" defer></script>
   <!-- Toast utility -->

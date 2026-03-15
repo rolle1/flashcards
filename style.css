@@ -926,4 +926,142 @@ body {
   .deck-grid { grid-template-columns: 1fr; }
 
   .page-section { padding: 18px 16px; }
+}/* ─── AI Generator — additions ───────────────────────────────────────────── */
+
+/* Preview header when export button is present */
+.ai-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--accent-glow);
+  border-bottom: 1px solid var(--border-accent);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.ai-preview-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Subtle hint beneath the preview header */
+.ai-preview-hint {
+  margin: 0;
+  padding: 6px 16px;
+  font-size: 11px;
+  color: var(--text-faint);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Skeleton loader ─────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.ai-skeleton {
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.ai-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.ai-skeleton-row:last-child { border-bottom: none; }
+
+.ai-skeleton-cell {
+  border-radius: 4px;
+  height: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(139,92,246,0.10) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Stagger the shimmer phase per row so they don't all pulse together */
+.ai-skeleton-row:nth-child(2) .ai-skeleton-cell { animation-delay: 0.1s; }
+.ai-skeleton-row:nth-child(3) .ai-skeleton-cell { animation-delay: 0.2s; }
+.ai-skeleton-row:nth-child(4) .ai-skeleton-cell { animation-delay: 0.3s; }
+.ai-skeleton-row:nth-child(5) .ai-skeleton-cell { animation-delay: 0.4s; }
+
+.ai-skeleton-num   { width: 18px; flex-shrink: 0; }
+.ai-skeleton-front { flex: 1; }
+.ai-skeleton-back  { flex: 1.2; }
+
+.ai-skeleton-sep {
+  color: var(--text-faint);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ─── Editable preview rows ───────────────────────────────────────────────── */
+
+/* Make front/back cells feel clickable */
+.ai-preview-front[contenteditable="true"],
+.ai-preview-back[contenteditable="true"] {
+  cursor: text;
+  border-radius: 4px;
+  padding: 2px 4px;
+  outline: none;
+  transition: background 0.15s, box-shadow 0.15s;
+  min-width: 40px;
+}
+
+.ai-preview-front[contenteditable="true"]:hover,
+.ai-preview-back[contenteditable="true"]:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.ai-preview-front[contenteditable="true"]:focus,
+.ai-preview-back[contenteditable="true"]:focus {
+  background: rgba(139,92,246,0.08);
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.35);
+}
+
+/* Row dimmed while per-card regeneration is in flight */
+.ai-preview-row--loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ─── Per-card action buttons ─────────────────────────────────────────────── */
+.ai-card-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-faint);
+  font-size: 12px;
+  line-height: 1;
+  padding: 3px 6px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.ai-card-btn--regen:hover {
+  color: var(--accent-soft);
+  border-color: var(--border-accent);
+  background: var(--accent-glow);
+}
+
+.ai-card-btn--delete:hover {
+  color: #fca5a5;
+  border-color: rgba(248,113,113,0.4);
+  background: rgba(248,113,113,0.08);
 }
