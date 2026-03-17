@@ -4,18 +4,24 @@
   <meta charset="UTF-8">
   <title>Explore Decks – Integros Flashcards</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/favicon.png">
+
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
+
+    <!-- Header + navigation -->
     <header class="brand-header">
       <div class="brand-logo-wrap">
         <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
       </div>
       <div class="brand-text">
         <h1>Integros Flashcards</h1>
-        <p>Train your knowledge, build your edge.</p>
+        <p>Train your knowledge. Master your craft.</p>
       </div>
       <nav class="brand-nav">
         <a href="index.html">Home</a>
@@ -26,6 +32,8 @@
     </header>
 
     <main class="page-main explore-main">
+
+      <!-- Deck library grid -->
       <section class="page-section">
         <div class="section-header-row">
           <div>
@@ -41,6 +49,7 @@
         <div id="deck-grid" class="deck-grid"></div>
       </section>
 
+      <!-- Google Drive sync -->
       <section class="page-section drive-sync-section">
         <h2>☁ Google Drive Sync</h2>
         <p class="section-subtitle">Sign in to sync your decks across all your devices.</p>
@@ -50,6 +59,7 @@
         <p id="driveSyncStatus" class="drive-sync-status"></p>
       </section>
 
+      <!-- AI deck generator -->
       <section class="page-section ai-generator">
         <h2>✦ AI Deck Generator</h2>
         <p class="section-subtitle">Describe a topic and get a ready-to-study deck in seconds.</p>
@@ -172,6 +182,7 @@
         </div>
       </section>
 
+      <!-- JSON import / export -->
       <section class="page-section json-tools">
         <h2>JSON tools</h2>
         <p class="section-subtitle">Import or export decks as JSON.</p>
@@ -191,22 +202,23 @@
       </section>
     </main>
 
+    <!-- Footer -->
     <footer class="app-footer">
       <p>Integros Flashcards · Train your knowledge. Master your craft.</p>
     </footer>
   </div>
 
-  <!-- Engine first - defer to ensure DOM is ready -->
+  <!-- Core engine (Integros API) — defer to ensure DOM is ready -->
   <script src="app.js" defer></script>
-  <!-- Toast utility -->
+  <!-- Toast notifications -->
   <script src="toast.js" defer></script>
-  <!-- Explore logic - defer ensures it runs after app.js -->
+  <!-- Explore page logic — defer ensures it runs after app.js -->
   <script src="explore.js" defer></script>
-  <!-- Google Identity Services -->
+  <!-- Google Identity Services (OAuth popup) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Drive Sync -->
+  <!-- Google Drive sync -->
   <script src="drive-sync.js" defer></script>
-  <!-- AI Deck Generator -->
+  <!-- AI deck generator -->
   <script src="ai-generator.js" defer></script>
 </body>
 </html>

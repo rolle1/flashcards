@@ -4,110 +4,17 @@
   <meta charset="UTF-8">
   <title>Study – Integros Flashcards</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/favicon.png">
+
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
-  <style>
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 4px 0 4px;
-      width: 100%;
-      position: absolute;
-      top: 10px;
-      left: 0;
-      box-sizing: border-box;
-      padding: 0 14px;
-    }
-    .brand-text {
-      text-align: center;
-      flex-grow: 1;
-    }
-    .controls-row {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .control-group select {
-      background: #1f2937;
-      color: #e5e7eb;
-      border: 1px solid #8b5cf6;
-      padding: 6px 10px 6px 36px;
-      border-radius: 999px;
-      font-size: 14px;
-      background-image: none;
-    }
-    .control-group label {
-      color: #9ca3af;
-      font-size: 13px;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .control-icon {
-      width: 16px;
-      height: 16px;
-      fill: #8b5cf6;
-    }
-
-    /* Card counter outside the card */
-    .card-counter {
-      text-align: center;
-      font-size: 13px;
-      color: #9ca3af;
-      margin: -4px 0 10px 0;
-    }
-
-    /* Progress bar */
-    .progress-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .progress-track {
-      flex: 1;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.07);
-      position: relative;
-      overflow: hidden;
-    }
-    .progress-bar {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      background: rgba(139, 92, 246, 0.5);
-      border-radius: 999px;
-      transition: width 0.3s ease;
-      width: 0%;
-    }
-    .progress-correct {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      background: rgba(74, 222, 128, 0.75);
-      border-radius: 999px;
-      transition: width 0.3s ease;
-      width: 0%;
-    }
-    .progress-label {
-      font-size: 12px;
-      color: #9ca3af;
-      white-space: nowrap;
-      min-width: 40px;
-      text-align: right;
-    }
-  </style>
 </head>
 <body>
   <div class="app-shell">
+
+    <!-- Header + navigation -->
     <header class="brand-header">
       <div class="brand-logo-wrap">
         <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
@@ -125,6 +32,8 @@
 
     <main class="page-main study-main">
       <section class="page-section">
+
+        <!-- Controls: deck picker, mode, score, reset, flagged filter -->
         <div class="controls-row">
           <div class="control-group">
             <label for="deckSelect">
@@ -157,7 +66,7 @@
           </div>
         </div>
 
-        <!-- Progress bar -->
+        <!-- Progress bar: purple = position, green = correct -->
         <div class="progress-wrap" aria-label="Deck progress">
           <div class="progress-track">
             <div id="progressBar" class="progress-bar"></div>
@@ -166,10 +75,11 @@
           <span id="progressLabel" class="progress-label">0 / 0</span>
         </div>
 
+        <!-- Flashcard -->
         <div id="card" class="card">
           <div class="card-header">
             <span id="cardLabel" class="card-label">Question</span>
-            <button id="flagBtn" class="flag-btn" aria-label="Flag this card" title="Flag for review">
+            <button id="flagBtn" class="flag-btn" aria-label="Flag this card" title="Flag for review (keyboard: F)">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                 <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/>
               </svg>
@@ -180,29 +90,40 @@
           </div>
         </div>
 
+        <!-- Card counter -->
         <div class="card-counter">
           <span id="cardIndex">1</span> / <span id="cardTotal">1</span>
         </div>
 
+        <!-- Navigation: prev / flip / next -->
         <div class="card-actions">
           <button id="prevBtn" class="btn-pill" aria-label="Previous card">Prev</button>
           <button id="flipBtn" class="btn-pill" aria-label="Flip card">Flip</button>
           <button id="nextBtn" class="btn-pill" aria-label="Next card">Next</button>
         </div>
+
+        <!-- Multiple choice options (hidden in normal mode) -->
         <div id="mcRow" class="mc-row">
           <button class="btn-pill mc-option" data-index="0" aria-label="Option 1"></button>
           <button class="btn-pill mc-option" data-index="1" aria-label="Option 2"></button>
           <button class="btn-pill mc-option" data-index="2" aria-label="Option 3"></button>
           <button class="btn-pill mc-option" data-index="3" aria-label="Option 4"></button>
         </div>
+
       </section>
     </main>
+
+    <!-- Footer -->
     <footer class="app-footer">
       <p>Integros Flashcards · Train your knowledge. Master your craft.</p>
     </footer>
   </div>
+
+  <!-- Core engine (Integros API) -->
   <script src="app.js"></script>
+  <!-- Toast notifications -->
   <script src="toast.js"></script>
+  <!-- Study page logic -->
   <script src="study.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // Study page logic.  Handles card navigation, spaced repetition,
-// multiple-choice and type modes, and progress reset.  It also
+// multiple-choice mode, flagging, and progress reset.  It also
 // remembers the last selected deck and study mode in localStorage
 // and persists them across sessions.
 
@@ -173,10 +173,12 @@
     const positionPct = ((index + 1) / total) * 100;
     progressBar.style.width = positionPct + "%";
 
-    // Correct fill — proportion of total answered that were correct
+    // Correct fill — proportion of full deck answered correctly
+    // Uses fullDeck.length so the green bar stays proportional even
+    // when filtering to flagged cards only.
     const stats = Integros.getStatsSnapshot(deckName, fullDeck.length);
     const correctPct = stats.total > 0
-      ? Math.min((stats.correct / total) * 100, positionPct)
+      ? Math.min((stats.correct / fullDeck.length) * 100, positionPct)
       : 0;
     progressCorrect.style.width = correctPct + "%";
 
@@ -378,6 +380,8 @@
       move(1);
     } else if (e.key === "ArrowLeft") {
       move(-1);
+    } else if (e.key === "f" || e.key === "F") {
+      if (flagBtn) flagBtn.click();
     }
   });
 

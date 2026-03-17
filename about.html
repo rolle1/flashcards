@@ -4,12 +4,17 @@
   <meta charset="UTF-8">
   <title>About Integros Flashcards</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/favicon.png">
+
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
 
+    <!-- Header + navigation -->
     <header class="brand-header">
       <div class="brand-logo-wrap">
         <img src="assets/integros-logo.png" alt="Integros logo" class="brand-logo">
@@ -26,6 +31,7 @@
       </nav>
     </header>
 
+    <!-- About content -->
     <main class="about-main">
       <section class="about-card">
         <h2>What this is</h2>
@@ -33,20 +39,33 @@
           Integros Flashcards is your personal drill engine for exams or anything else you care enough to encode.
         </p>
         <p>
-          Decks live in JSON. The browser stores your progress locally, no account,
-          no sync, no noise.
+          Decks live in JSON. The browser stores your progress locally.
+          Optionally sync across devices with Google Drive.
         </p>
 
         <h2>How to use it</h2>
         <ul>
           <li>Go to Explore to import or tweak decks.</li>
-          <li>Head to Study and choose a mode: normal, multiple choice, type answer, or spaced order.</li>
+          <li>Head to Study and choose a mode: normal or multiple choice.</li>
           <li>Repeat until the cards feel boring. Then you know it is working.</li>
+        </ul>
+
+        <h2>Keyboard shortcuts</h2>
+        <ul>
+          <li><strong>Space</strong> — flip the card</li>
+          <li><strong>← →</strong> — previous / next card</li>
+          <li><strong>F</strong> — flag the current card for review</li>
         </ul>
       </section>
     </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Integros Flashcards · Train your knowledge. Master your craft.</p>
+    </footer>
   </div>
 
+  <!-- Core engine (Integros API) -->
   <script src="app.js"></script>
 </body>
 </html>
